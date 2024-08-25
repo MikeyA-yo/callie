@@ -13,7 +13,8 @@ export const peer = new Peer();
 function App() {
   const [camStream, setCamStream] = useState<MediaStream | null>();
   const [screenStream, setScreenStream] = useState<MediaStream | null>();
-  const [remoteStream, setRemoteStream] = useState<MediaStream>();
+  // const [remoteStream, setRemoteStream] = useState<MediaStream>();
+  const [id, setId] = useState("")
   const [audio, setAudio] = useState(false);
   const [file, setFile] = useState("");
   const [remoteId, setRemoteId] = useState("")
@@ -88,14 +89,15 @@ function App() {
   }
   
   peer.on("open", id =>{
-    alert(id)
+    setId(id)
   });
   peer.on("call", call=>{
     if(camStream){
        call.answer(camStream)
        call.on("stream", stream =>{
-        setRemoteStream(stream)
-        remoteCam.srcObject = stream
+        // setRemoteStream(stream)
+        // remoteCam.srcObject = stream
+        addUser(stream)
        })
     }
   })
@@ -104,11 +106,20 @@ function App() {
     if(camStream){
       const conn = peer.call(id, camStream as MediaStream);
       conn.on("stream", stream =>{
-        setRemoteStream(stream);
-        remoteCam.srcObject = stream
+        // setRemoteStream(stream);
+        // remoteCam.srcObject = stream
+        addUser(stream)
       })
     }
-
+  }
+  function addUser(stream:MediaStream){
+    const streams = document.getElementById("streams") as HTMLDivElement;
+    const video = document.createElement("video");
+    video.autoplay = true;
+    video.controls = false;
+    video.className = "max-h-40 max-w-40";
+    video.srcObject = stream;
+    streams.appendChild(video);
   }
   async function loadScreen(){
     const media = await navigator.mediaDevices.getDisplayMedia({
@@ -158,7 +169,7 @@ function App() {
         </button>
       </div>
       <div className="flex flex-col gap-2">
-        Call a user your id: {peer.id}
+        Call a user your id: {id}
         <input className="p-2" onChange={(e)=>{
           setRemoteId(e.target.value)
         }} />
@@ -175,8 +186,10 @@ function App() {
             cam.srcObject = null
             setCamStream(null)
         }}>Close Camera</button>}
-        <video autoPlay controls={false} playsInline id="userCam" className="max-h-40 max-w-40" muted />
-        <video autoPlay controls={false} playsInline id="remoteCam" className="max-h-40 max-w-40" />
+        <div className="flex gap-2" id="streams"> 
+          <video autoPlay controls={false} playsInline id="userCam" className="max-h-40 max-w-40" muted />
+          {/* <video autoPlay controls={false} playsInline id="remoteCam" className="max-h-40 max-w-40" /> */}
+        </div>
         <button onClick={()=>{
             async function LoadCam() {
                 try {
