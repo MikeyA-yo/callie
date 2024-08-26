@@ -18,10 +18,6 @@ export function Stats(arg1) {
   return window['go']['main']['App']['Stats'](arg1);
 }
 
-export function Test(arg1) {
-  return window['go']['main']['App']['Test'](arg1);
-}
-
 export function Write(arg1, arg2) {
   return window['go']['main']['App']['Write'](arg1, arg2);
 }

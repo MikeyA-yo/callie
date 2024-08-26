@@ -1,11 +1,11 @@
 package main
 
 import (
+	gofs "callie/goFs"
 	"context"
 	"fmt"
 	"io/fs"
 	"log"
-	gofs "myproject/goFs"
 	"net/http"
 	"os"
 	"strings"
@@ -38,18 +38,6 @@ func (a *App) startup(ctx context.Context) {
 // Greet returns a greeting for the given name
 func (a *App) Greet(name string) string {
 	return fmt.Sprintf("Hello %s, How do you do today?", name)
-}
-func (a *App) Test(name string) string {
-	return a.Greet(name)
-}
-
-func (u *User) SayAgenName(name, age string) User {
-	u.Age = age
-	u.Name = name
-	return User{
-		Name: u.Name,
-		Age:  u.Age,
-	}
 }
 
 func (a *App) OpenFile() (string, error) {

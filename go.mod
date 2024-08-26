@@ -1,4 +1,4 @@
-module myproject
+module callie
 
 go 1.21
 

@@ -12,7 +12,7 @@ export const peer = new Peer();
 
 function App() {
   const [camStream, setCamStream] = useState<MediaStream | null>();
-  const [screenStream, setScreenStream] = useState<MediaStream | null>();
+  //const [screenStream, setScreenStream] = useState<MediaStream | null>();
   // const [remoteStream, setRemoteStream] = useState<MediaStream>();
   const [id, setId] = useState("")
   const [audio, setAudio] = useState(false);
@@ -22,15 +22,14 @@ function App() {
   const [image, setImage] = useState(false);
 
   const cam:HTMLVideoElement = document.getElementById("userCam") as HTMLVideoElement;
-  const remoteCam = document.getElementById("remoteCam") as HTMLVideoElement;
+ // const remoteCam = document.getElementById("remoteCam") as HTMLVideoElement;
+  const streams = document.getElementById("streams") as HTMLDivElement;
   async function write() {
     const readData = await Read(file);
     const stats = await Stats(file);
     await Write(stats.name, readData);
-    // const res = await fetch(stats.name);
-    // const blob = await res.blob();
-    // const blobUrl = URL.createObjectURL(blob);
   }
+  
   async function Open() {
     let file = await OpenFile();
     if (file.length === 0) {
@@ -113,7 +112,6 @@ function App() {
     }
   }
   function addUser(stream:MediaStream){
-    const streams = document.getElementById("streams") as HTMLDivElement;
     const video = document.createElement("video");
     video.autoplay = true;
     video.controls = false;
@@ -125,7 +123,7 @@ function App() {
     const media = await navigator.mediaDevices.getDisplayMedia({
       video:true,
     });
-    setScreenStream(media);
+    //setScreenStream(media);
     cam.srcObject = media 
   }
   return (
@@ -203,7 +201,6 @@ function App() {
                    }else{
                     cam.srcObject = await navigator.mediaDevices.getUserMedia({audio:true, video:true}) as MediaProvider
                    }
-                   alert(cam.srcObject)
                 } catch (e:any) {
                     alert(e.message)
                 }
