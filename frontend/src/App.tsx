@@ -20,7 +20,7 @@ function App() {
   const [remoteId, setRemoteId] = useState("")
   const [mp4, setMp4] = useState(false);
   const [image, setImage] = useState(false);
-
+  const [remIds, setRemIds] = useState<string[]>([])
   const cam:HTMLVideoElement = document.getElementById("userCam") as HTMLVideoElement;
  // const remoteCam = document.getElementById("remoteCam") as HTMLVideoElement;
   const streams = document.getElementById("streams") as HTMLDivElement;
@@ -94,8 +94,7 @@ function App() {
     if(camStream){
        call.answer(camStream)
        call.on("stream", stream =>{
-        // setRemoteStream(stream)
-        // remoteCam.srcObject = stream
+        
         addUser(stream)
        })
     }
@@ -107,6 +106,7 @@ function App() {
       conn.on("stream", stream =>{
         // setRemoteStream(stream);
         // remoteCam.srcObject = stream
+        
         addUser(stream)
       })
     }
@@ -185,7 +185,7 @@ function App() {
             setCamStream(null)
         }}>Close Camera</button>}
         <div className="flex gap-2" id="streams"> 
-          <video autoPlay controls={false} playsInline id="userCam" className="max-h-40 max-w-40" muted />
+          <video autoPlay controls={false}  playsInline id="userCam" className="max-h-40 max-w-40" muted />
           {/* <video autoPlay controls={false} playsInline id="remoteCam" className="max-h-40 max-w-40" /> */}
         </div>
         <button onClick={()=>{
