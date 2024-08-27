@@ -95,7 +95,7 @@ function App() {
        call.answer(camStream)
        call.on("stream", stream =>{
         
-        addUser(stream)
+        addUser(stream, call.peer)
        })
     }
   })
@@ -107,17 +107,21 @@ function App() {
         // setRemoteStream(stream);
         // remoteCam.srcObject = stream
         
-        addUser(stream)
+        addUser(stream, id)
       })
     }
   }
-  function addUser(stream:MediaStream){
-    const video = document.createElement("video");
-    video.autoplay = true;
-    video.controls = false;
-    video.className = "max-h-40 max-w-40";
-    video.srcObject = stream;
-    streams.appendChild(video);
+  function addUser(stream:MediaStream, id:string){
+    const existing = document.getElementById(id)
+    if (!existing){
+      const video = document.createElement("video");
+      video.autoplay = true;
+      video.controls = false;
+      video.className = "max-h-40 max-w-40";
+      video.id = id;
+      video.srcObject = stream;
+      streams.appendChild(video);
+    }
   }
   async function loadScreen(){
     const media = await navigator.mediaDevices.getDisplayMedia({
