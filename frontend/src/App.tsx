@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import {
   OpenFile,
@@ -123,6 +123,11 @@ function App() {
       streams.appendChild(video);
     }
   }
+  useEffect(()=>{
+    if(camStream){
+      cam.srcObject = camStream as MediaProvider;
+    }
+  }, [camStream])
   async function loadScreen(){
     const media = await navigator.mediaDevices.getDisplayMedia({
       video:true,
@@ -196,14 +201,20 @@ function App() {
             async function LoadCam() {
                 try {
                     const media = await navigator.mediaDevices.getUserMedia({audio:true, video:true});
-                    setCamStream(media)
+                    
                    if(!cam){
                     return
                    }
                    if(media){
+                    setCamStream(media)
                     cam.srcObject = media as MediaProvider
                    }else{
-                    cam.srcObject = await navigator.mediaDevices.getUserMedia({audio:true, video:true}) as MediaProvider
+                    cam.srcObject = await navigator.mediaDevices.getUserMedia({audio:true, video:true}) as MediaProvider;
+                    if(cam.srcObject){
+                      return
+                    }else{
+                      cam.srcObject = await navigator.mediaDevices.getUserMedia({audio:true, video:true}) as MediaProvider;
+                    }
                    }
                 } catch (e:any) {
                     alert(e.message)
