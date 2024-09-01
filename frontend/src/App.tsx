@@ -10,8 +10,8 @@ import Peer from "peerjs";
 import { io } from "socket.io-client";
 // const peer = new RTCPeerConnection( {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
 export const peer = new Peer();
+const socket = io("http://localhost:3000");
 function App() {
-  const socket = io("http://localhost:3000");
   const [camStream, setCamStream] = useState<MediaStream | null>();
   const [id, setId] = useState("")
   const [audio, setAudio] = useState(false);

@@ -11,6 +11,8 @@ import (
 	"strings"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
+	// "go.mongodb.org/mongo-driver/mongo"
+	// "go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // App struct
@@ -28,6 +30,10 @@ type User struct {
 func NewApp() *App {
 	return &App{}
 }
+
+// func DB() {
+// 	mongo.Connect(options.Client().ApplyURI(""))
+// }
 
 // startup is called when the app starts. The context is saved
 // so we can call the runtime methods
