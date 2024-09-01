@@ -27,12 +27,17 @@ function App() {
     const stats = await Stats(file);
     await Write(stats.name, readData);
   }
-  socket.on("connect", () => {
-
-  });
-  socket.on("user-connect", ()=>{
-    
+  // socket.on("connect", () => {
+  //    socket.emit("")
+  // });
+  // socket.on("user-connect", ()=>{ 
+  // })
+  socket.on("joined", (id:string)=>{
+    call(id)
   })
+ function joinRoom(roomId:string, userId:string){
+    socket.emit("join-room", roomId, userId)
+  }
   async function Open() {
     let file = await OpenFile();
     if (file.length === 0) {
@@ -107,9 +112,6 @@ function App() {
     if(camStream){
       const conn = peer.call(id, camStream as MediaStream);
       conn.on("stream", stream =>{
-        // setRemoteStream(stream);
-        // remoteCam.srcObject = stream
-        
         addUser(stream, id)
       })
     }
@@ -179,11 +181,14 @@ function App() {
         </button>
       </div>
       <div className="flex flex-col gap-2">
-        Call a user your id: {id}
+        Call a user your id: {id},
+        Enter Room Address:
         <input className="p-2" onChange={(e)=>{
           setRemoteId(e.target.value)
         }} />
-        <button className="p-2" onClick={()=> call(remoteId)}>Call</button>
+        <button className="p-2" onClick={()=>{
+          joinRoom(remoteId, id)
+        }}>Call</button>
       </div>
       <div className="flex flex-col gap-4">
         {camStream && <button onClick={()=>{
