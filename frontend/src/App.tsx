@@ -27,13 +27,11 @@ function App() {
     const stats = await Stats(file);
     await Write(stats.name, readData);
   }
-  // socket.on("connect", () => {
-  //    socket.emit("")
-  // });
-  // socket.on("user-connect", ()=>{ 
-  // })
   socket.on("joined", (id:string)=>{
     call(id)
+  });
+  socket.on("user-disconnected", (id: string)=>{
+    document.getElementById(id)?.remove()
   })
  function joinRoom(roomId:string, userId:string){
     socket.emit("join-room", roomId, userId)
