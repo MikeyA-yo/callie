@@ -7,29 +7,32 @@ import {
   Write,
 } from "../wailsjs/go/main/App";
 import Peer from "peerjs";
+import { io } from "socket.io-client";
 // const peer = new RTCPeerConnection( {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
 export const peer = new Peer();
-
 function App() {
+  const socket = io("http://localhost:3000");
   const [camStream, setCamStream] = useState<MediaStream | null>();
-  //const [screenStream, setScreenStream] = useState<MediaStream | null>();
-  // const [remoteStream, setRemoteStream] = useState<MediaStream>();
   const [id, setId] = useState("")
   const [audio, setAudio] = useState(false);
   const [file, setFile] = useState("");
   const [remoteId, setRemoteId] = useState("")
   const [mp4, setMp4] = useState(false);
   const [image, setImage] = useState(false);
-  const [remIds, setRemIds] = useState<string[]>([])
+  //const [remIds, setRemIds] = useState<string[]>([])
   const cam:HTMLVideoElement = document.getElementById("userCam") as HTMLVideoElement;
- // const remoteCam = document.getElementById("remoteCam") as HTMLVideoElement;
   const streams = document.getElementById("streams") as HTMLDivElement;
   async function write() {
     const readData = await Read(file);
     const stats = await Stats(file);
     await Write(stats.name, readData);
   }
-  
+  socket.on("connect", () => {
+
+  });
+  socket.on("user-connect", ()=>{
+    
+  })
   async function Open() {
     let file = await OpenFile();
     if (file.length === 0) {
@@ -209,11 +212,18 @@ function App() {
                     setCamStream(media)
                     cam.srcObject = media as MediaProvider
                    }else{
-                    cam.srcObject = await navigator.mediaDevices.getUserMedia({audio:true, video:true}) as MediaProvider;
-                    if(cam.srcObject){
-                      return
+                    let media = await navigator.mediaDevices.getUserMedia({audio:true, video:true});
+                    if(media){
+                      setCamStream(media)
+                      cam.srcObject = media  as MediaProvider;
                     }else{
-                      cam.srcObject = await navigator.mediaDevices.getUserMedia({audio:true, video:true}) as MediaProvider;
+                      let media = await navigator.mediaDevices.getUserMedia({audio:true, video:true});
+                      if(media){
+                        setCamStream(media)
+                        cam.srcObject = media  as MediaProvider;
+                      }else{
+                        cam.srcObject = await navigator.mediaDevices.getUserMedia({audio:true, video:true}) as MediaProvider;
+                      }
                     }
                    }
                 } catch (e:any) {
