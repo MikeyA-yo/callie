@@ -8,9 +8,10 @@ import {
 } from "../wailsjs/go/main/App";
 import Peer from "peerjs";
 import { io } from "socket.io-client";
+import MediaView from "./components/media";
 // const peer = new RTCPeerConnection( {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
 export const peer = new Peer();
-const socket = io("http://localhost:3000");
+const socket = io(import.meta.env.VITE_SOCK_URL as string);
 function App() {
   const [camStream, setCamStream] = useState<MediaStream | null>();
   const [id, setId] = useState("")
@@ -106,7 +107,7 @@ function App() {
     }
   })
 
-  async function call(id: string){
+  function call(id: string){
     if(camStream){
       const conn = peer.call(id, camStream as MediaStream);
       conn.on("stream", stream =>{
@@ -130,7 +131,35 @@ function App() {
     if(camStream){
       cam.srcObject = camStream as MediaProvider;
     }
-  }, [camStream])
+  }, [camStream]);
+  async function loadCam() {
+    try {
+        const media = await navigator.mediaDevices.getUserMedia({audio:true, video:true});
+       if(!cam){
+        return
+       }
+       if(media){
+        setCamStream(media)
+        cam.srcObject = media as MediaProvider
+       }else{
+        let media = await navigator.mediaDevices.getUserMedia({audio:true, video:true});
+        if(media){
+          setCamStream(media)
+          cam.srcObject = media  as MediaProvider;
+        }else{
+          let media = await navigator.mediaDevices.getUserMedia({audio:true, video:true});
+          if(media){
+            setCamStream(media)
+            cam.srcObject = media  as MediaProvider;
+          }else{
+            cam.srcObject = await navigator.mediaDevices.getUserMedia({audio:true, video:true}) as MediaProvider;
+          }
+        }
+       }
+    } catch (e:any) {
+        alert(e.message)
+    }
+}
   async function loadScreen(){
     const media = await navigator.mediaDevices.getDisplayMedia({
       video:true,
@@ -140,43 +169,18 @@ function App() {
   }
   return (
     <div className="bg-gray-400 text-slate-800 h-screen overflow-auto flex flex-col items-center gap-4 justify-center">
-      {image && file && (
-        <img
-          src={encodeURIComponent(file)}
-          alt="image of what you put"
-          className="h-44 w-44"
-        />
-      )}
-      {mp4 && file && (
-        <video
-          src={encodeURIComponent(file)}
-          controls
-          className="h-96 w-96"
-        ></video>
-      )}
-      {audio && file && (
-        <audio
-          src={encodeURIComponent(file)}
-          controls
-          className="max-h-96 max-w-96"
-        ></audio>
-      )}
       <div className="flex gap-4">
-        <button
-          onClick={() => {
-            Open();
-          }}
-        >
-          Open File
-        </button>
-        <button
-          onClick={() => {
-            write();
-          }}
-        >
-          {" "}
-          Save content
-        </button>
+         <MediaView open={()=>{
+          Open()
+         }}
+         file={file}
+         mp4={mp4}
+         image={image}
+         audio={audio}
+         save={()=>{
+          write()
+         }}
+         />
       </div>
       <div className="flex flex-col gap-2">
         Call a user your id: {id},
@@ -201,39 +205,10 @@ function App() {
         }}>Close Camera</button>}
         <div className="flex gap-2" id="streams"> 
           <video autoPlay controls={false}  playsInline id="userCam" className="max-h-40 max-w-40" muted />
-          {/* <video autoPlay controls={false} playsInline id="remoteCam" className="max-h-40 max-w-40" /> */}
         </div>
         <button onClick={()=>{
-            async function LoadCam() {
-                try {
-                    const media = await navigator.mediaDevices.getUserMedia({audio:true, video:true});
-                    
-                   if(!cam){
-                    return
-                   }
-                   if(media){
-                    setCamStream(media)
-                    cam.srcObject = media as MediaProvider
-                   }else{
-                    let media = await navigator.mediaDevices.getUserMedia({audio:true, video:true});
-                    if(media){
-                      setCamStream(media)
-                      cam.srcObject = media  as MediaProvider;
-                    }else{
-                      let media = await navigator.mediaDevices.getUserMedia({audio:true, video:true});
-                      if(media){
-                        setCamStream(media)
-                        cam.srcObject = media  as MediaProvider;
-                      }else{
-                        cam.srcObject = await navigator.mediaDevices.getUserMedia({audio:true, video:true}) as MediaProvider;
-                      }
-                    }
-                   }
-                } catch (e:any) {
-                    alert(e.message)
-                }
-            }
-            LoadCam();
+        
+            loadCam();
         }}>
             Open Camera
         </button>
