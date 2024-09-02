@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import {
-  OpenFile,
-  Read,
-  Stats,
-  Write,
-} from "../wailsjs/go/main/App";
+import { OpenFile, Read, Stats, Write } from "../wailsjs/go/main/App";
 import Peer from "peerjs";
 import { io } from "socket.io-client";
 import MediaView from "./components/media";
@@ -14,28 +9,33 @@ export const peer = new Peer();
 const socket = io(import.meta.env.VITE_SOCK_URL as string);
 function App() {
   const [camStream, setCamStream] = useState<MediaStream | null>();
-  const [id, setId] = useState("")
+  const [id, setId] = useState("");
   const [audio, setAudio] = useState(false);
   const [file, setFile] = useState("");
-  const [remoteId, setRemoteId] = useState("")
+  const [remoteId, setRemoteId] = useState("");
   const [mp4, setMp4] = useState(false);
   const [image, setImage] = useState(false);
   //const [remIds, setRemIds] = useState<string[]>([])
-  const cam:HTMLVideoElement = document.getElementById("userCam") as HTMLVideoElement;
+  const cam: HTMLVideoElement = document.getElementById(
+    "userCam"
+  ) as HTMLVideoElement;
   const streams = document.getElementById("streams") as HTMLDivElement;
   async function write() {
     const readData = await Read(file);
     const stats = await Stats(file);
     await Write(stats.name, readData);
   }
-  socket.on("joined", (id:string)=>{
-    call(id)
+  socket.on("joined", (id: string) => {
+    call(id);
   });
-  socket.on("user-disconnected", (id: string)=>{
-    document.getElementById(id)?.remove()
+  socket.on("user-disconnected", (id: string) => {
+    document.getElementById(id)?.remove();
+  });
+  socket.on("incoming-blob", (blob, type) =>{
+    addMedia(blob, type)
   })
- function joinRoom(roomId:string, userId:string){
-    socket.emit("join-room", roomId, userId)
+  function joinRoom(roomId: string, userId: string) {
+    socket.emit("join-room", roomId, userId);
   }
   async function Open() {
     let file = await OpenFile();
@@ -93,31 +93,40 @@ function App() {
     }
     setFile(file);
   }
-  
-  peer.on("open", id =>{
-    setId(id)
-  });
-  peer.on("call", call=>{
-    if(camStream){
-       call.answer(camStream)
-       call.on("stream", stream =>{
-        
-        addUser(stream, call.peer)
-       })
-    }
-  })
 
-  function call(id: string){
-    if(camStream){
+  peer.on("open", (id) => {
+    setId(id);
+  });
+  peer.on("call", (call) => {
+    if (camStream) {
+      call.answer(camStream);
+      call.on("stream", (stream) => {
+        addUser(stream, call.peer);
+      });
+    }
+  });
+
+  function call(id: string) {
+    if (camStream) {
       const conn = peer.call(id, camStream as MediaStream);
-      conn.on("stream", stream =>{
-        addUser(stream, id)
-      })
+      conn.on("stream", (stream) => {
+        addUser(stream, id);
+      });
     }
   }
-  function addUser(stream:MediaStream, id:string){
-    const existing = document.getElementById(id)
-    if (!existing){
+  function addMedia(blob:Blob, type:string){
+    const element = type !== "unkown" ? document.createElement(type) : null;
+    if(element){
+      let mediaElement = element as HTMLMediaElement
+      let url = URL.createObjectURL(blob);
+      mediaElement.src = url;
+      if(type === "video") mediaElement.controls = true;
+      streams.appendChild(mediaElement)
+    }
+  }
+  function addUser(stream: MediaStream, id: string) {
+    const existing = document.getElementById(id);
+    if (!existing) {
       const video = document.createElement("video");
       video.autoplay = true;
       video.controls = false;
@@ -127,96 +136,150 @@ function App() {
       streams.appendChild(video);
     }
   }
-  useEffect(()=>{
-    if(camStream){
+  useEffect(() => {
+    if (camStream) {
       cam.srcObject = camStream as MediaProvider;
     }
   }, [camStream]);
   async function loadCam() {
     try {
-        const media = await navigator.mediaDevices.getUserMedia({audio:true, video:true});
-       if(!cam){
-        return
-       }
-       if(media){
-        setCamStream(media)
-        cam.srcObject = media as MediaProvider
-       }else{
-        let media = await navigator.mediaDevices.getUserMedia({audio:true, video:true});
-        if(media){
-          setCamStream(media)
-          cam.srcObject = media  as MediaProvider;
-        }else{
-          let media = await navigator.mediaDevices.getUserMedia({audio:true, video:true});
-          if(media){
-            setCamStream(media)
-            cam.srcObject = media  as MediaProvider;
-          }else{
-            cam.srcObject = await navigator.mediaDevices.getUserMedia({audio:true, video:true}) as MediaProvider;
+      const media = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: true,
+      });
+      if (!cam) {
+        return;
+      }
+      if (media) {
+        setCamStream(media);
+        cam.srcObject = media as MediaProvider;
+      } else {
+        let media = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+          video: true,
+        });
+        if (media) {
+          setCamStream(media);
+          cam.srcObject = media as MediaProvider;
+        } else {
+          let media = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: true,
+          });
+          if (media) {
+            setCamStream(media);
+            cam.srcObject = media as MediaProvider;
+          } else {
+            cam.srcObject = (await navigator.mediaDevices.getUserMedia({
+              audio: true,
+              video: true,
+            })) as MediaProvider;
           }
         }
-       }
-    } catch (e:any) {
-        alert(e.message)
+      }
+    } catch (e: any) {
+      alert(e.message);
     }
-}
-  async function loadScreen(){
+  }
+  async function shareMedia() {
+    const data = await Read(file);
+    alert(data)
+    const bytes = new Uint8Array(data);
+    const blob = new Blob([bytes], { type: 'application/octet-stream' });
+    let type = image ? "image": mp4 ? "video" : audio ? "audio": "unknown";
+    socket.emit("media-share", blob, type)
+  }
+  async function loadScreen() {
     const media = await navigator.mediaDevices.getDisplayMedia({
-      video:true,
+      video: true,
     });
     //setScreenStream(media);
-    cam.srcObject = media 
+    cam.srcObject = media;
   }
   return (
-    <div className="bg-gray-400 text-slate-800 h-screen overflow-auto flex flex-col items-center gap-4 justify-center">
-      <div className="flex gap-4">
-         <MediaView open={()=>{
-          Open()
-         }}
-         file={file}
-         mp4={mp4}
-         image={image}
-         audio={audio}
-         save={()=>{
-          write()
-         }}
-         />
-      </div>
-      <div className="flex flex-col gap-2">
-        Call a user your id: {id},
-        Enter Room Address:
-        <input className="p-2" onChange={(e)=>{
-          setRemoteId(e.target.value)
-        }} />
-        <button className="p-2" onClick={()=>{
-          joinRoom(remoteId, id)
-        }}>Call</button>
-      </div>
-      <div className="flex flex-col gap-4">
-        {camStream && <button onClick={()=>{
-            const cam =  document.getElementById("userCam") as HTMLVideoElement;
-            const stream = cam.srcObject as MediaStream
-            const tracks = stream.getTracks();
-            tracks.forEach((track)=>{
-                track.stop();
-            })
-            cam.srcObject = null
-            setCamStream(null)
-        }}>Close Camera</button>}
-        <div className="flex gap-2" id="streams"> 
-          <video autoPlay controls={false}  playsInline id="userCam" className="max-h-40 max-w-40" muted />
+    <div className="bg-[#1E201E] text-[#ECDFCC] min-h-screen overflow-auto flex items-center gap-4 justify-center">
+      <div className="p-4 flex flex-col gap-2">
+        <h1 className="text-3xl">Media Display</h1>
+        <div className="max-h-96 max-w-96 p-4 overflow-auto">
+          <MediaView
+            open={() => {
+              Open();
+            }}
+            file={file}
+            mp4={mp4}
+            image={image}
+            audio={audio}
+            save={() => {
+              write();
+            }}
+          />
         </div>
-        <button onClick={()=>{
-        
-            loadCam();
-        }}>
-            Open Camera
-        </button>
-        <button onClick={()=>{
-          loadScreen()
-        }}>
-          Share Screen
+        <button className="p-2" onClick={()=>{
+          shareMedia();
+        }}>Share Media</button>
+      </div>
+      <div className="flex flex-col gap-4 p-2">
+        <div className="flex flex-col text-xl gap-2">
+          Enter Room Address:
+          <input
+            className="p-2 text-[#697565]"
+            onChange={(e) => {
+              setRemoteId(e.target.value);
+            }}
+          />
+          <button
+            className="p-2"
+            onClick={() => {
+              joinRoom(remoteId, id);
+            }}
+          >
+            Call
           </button>
+        </div>
+        <div className="flex flex-col gap-4">
+          {camStream && (
+            <button
+              onClick={() => {
+                const cam = document.getElementById(
+                  "userCam"
+                ) as HTMLVideoElement;
+                const stream = cam.srcObject as MediaStream;
+                const tracks = stream.getTracks();
+                tracks.forEach((track) => {
+                  track.stop();
+                });
+                cam.srcObject = null;
+                setCamStream(null);
+              }}
+            >
+              Close Camera
+            </button>
+          )}
+          <div className="flex gap-2" id="streams">
+            <video
+              autoPlay
+              controls={false}
+              playsInline
+              id="userCam"
+              className="max-h-40 max-w-40"
+              muted
+            />
+          </div>
+          <button
+            onClick={() => {
+              loadCam();
+            }}
+          >
+            Open Camera
+          </button>
+          <button
+            onClick={() => {
+              loadScreen();
+            }}
+          >
+            Share Screen
+          </button>
+        </div>
       </div>
     </div>
   );

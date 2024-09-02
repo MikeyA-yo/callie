@@ -15,29 +15,32 @@ export default function MediaView({
 }) {
   return (
     <>
-      {image && file && (
-        <img
-          src={encodeURIComponent(file)}
-          alt="image of what you put"
-          className="h-44 w-44"
-        />
-      )}
-      {mp4 && file && (
-        <video
-          src={encodeURIComponent(file)}
-          controls
-          className="h-96 w-96"
-        ></video>
-      )}
-      {audio && file && (
-        <audio
-          src={encodeURIComponent(file)}
-          controls
-          className="max-h-96 max-w-96"
-        ></audio>
-      )}
-      <button onClick={open}>Open File</button>
-      <button onClick={save}> Save content</button>
+      <div className="flex flex-col gap-2 w-full items-center justify-center">
+        {image && file && (
+          <img
+            src={encodeURIComponent(file)}
+            alt="image of what you put"
+            className="h-44 w-44"
+          />
+        )}
+        {mp4 && file && (
+          <video
+            src={encodeURIComponent(file)}
+            controls
+            className="h-96 w-96"
+          ></video>
+        )}
+        {audio && file && (
+          <audio
+            src={encodeURIComponent(file)}
+            controls
+            className="max-h-96 max-w-96"
+          ></audio>
+        )}
+        <div className="flex gap-4 items-center justify-center">
+        <button onClick={open}>Open File</button>
+        <button onClick={save}> Save content</button></div>
+      </div>
     </>
   );
 }
