@@ -4,7 +4,7 @@ import { OpenFile, Read, Stats, Write } from "../wailsjs/go/main/App";
 import Peer from "peerjs";
 import { io } from "socket.io-client";
 import MediaView from "./components/media";
-// const peer = new RTCPeerConnection( {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
+// const peer = new RTCPeerConnection( {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}); 
 export const peer = new Peer();
 const socket = io(import.meta.env.VITE_SOCK_URL as string);
 function App() {
@@ -31,9 +31,14 @@ function App() {
   socket.on("user-disconnected", (id: string) => {
     document.getElementById(id)?.remove();
   });
-  socket.on("incoming-blob", (blob, type) =>{
-    addMedia(blob, type)
+  socket.on("data", (data, type) =>{
+   //todo /// thinking of not implementing this feature and turning it to chat box, pics may work tho
   })
+  async function shareMedia() {
+    const data = await Read(file);
+    let type = image ? "image": mp4 ? "video" : audio ? "audio": "unknown";
+    socket.emit("media-share", data, type)
+  }
   function joinRoom(roomId: string, userId: string) {
     socket.emit("join-room", roomId, userId);
   }
@@ -181,14 +186,6 @@ function App() {
       alert(e.message);
     }
   }
-  async function shareMedia() {
-    const data = await Read(file);
-    alert(data)
-    const bytes = new Uint8Array(data);
-    const blob = new Blob([bytes], { type: 'application/octet-stream' });
-    let type = image ? "image": mp4 ? "video" : audio ? "audio": "unknown";
-    socket.emit("media-share", blob, type)
-  }
   async function loadScreen() {
     const media = await navigator.mediaDevices.getDisplayMedia({
       video: true,
@@ -214,8 +211,8 @@ function App() {
             }}
           />
         </div>
-        <button className="p-2" onClick={()=>{
-          shareMedia();
+        <button className="p-2" onClick={async ()=>{
+         await shareMedia();
         }}>Share Media</button>
       </div>
       <div className="flex flex-col gap-4 p-2">
