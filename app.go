@@ -81,6 +81,14 @@ func (a *App) Stats(name string) Info {
 	}
 }
 
+func (a *App) ShowInfo(i, t string) (string, error) {
+	return runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+		Type:    "info",
+		Title:   t,
+		Message: i,
+	})
+}
+
 type FileLoader struct {
 	http.Handler
 }

@@ -8,6 +8,8 @@ export function OpenFile():Promise<string>;
 
 export function Read(arg1:string):Promise<Array<number>>;
 
+export function ShowInfo(arg1:string,arg2:string):Promise<string>;
+
 export function Stats(arg1:string):Promise<main.Info>;
 
 export function Write(arg1:string,arg2:Array<number>):Promise<void>;

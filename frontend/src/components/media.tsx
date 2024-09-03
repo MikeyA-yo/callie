@@ -4,14 +4,13 @@ export default function MediaView({
   audio,
   file,
   open,
-  save,
 }: {
   image: boolean;
   mp4: boolean;
   audio: boolean;
   file: string;
   open: React.MouseEventHandler<HTMLButtonElement>;
-  save: React.MouseEventHandler<HTMLButtonElement>;
+  // save: React.MouseEventHandler<HTMLButtonElement>;
 }) {
   return (
     <>
@@ -37,9 +36,9 @@ export default function MediaView({
             className="max-h-96 max-w-96"
           ></audio>
         )}
-        <div className="flex gap-4 items-center justify-center">
-        <button onClick={open}>Open File</button>
-        <button onClick={save}> Save content</button></div>
+        <div className="flex  items-center justify-center">
+          <button onClick={open}>Open File</button>
+        </div>
       </div>
     </>
   );

@@ -14,6 +14,10 @@ export function Read(arg1) {
   return window['go']['main']['App']['Read'](arg1);
 }
 
+export function ShowInfo(arg1, arg2) {
+  return window['go']['main']['App']['ShowInfo'](arg1, arg2);
+}
+
 export function Stats(arg1) {
   return window['go']['main']['App']['Stats'](arg1);
 }
