@@ -22,8 +22,6 @@ jobs:
           build-platform: ${{ matrix.build.platform }}
   macos:
     runs-on: macos-latest
-    working-directory: ${{ inputs.app-working-directory }}
-    shell: bash
     steps:
       - uses: actions/checkout@v3
         with:
