@@ -30,7 +30,7 @@ jobs:
         uses: actions/setup-go@v4
         with:
           check-latest: true
-          go-version: ${{inputs.go-version}}
+          go-version: 'stable'
       - name: Install Wails
         if: inputs.build == 'true'
         run: go install github.com/wailsapp/wails/v2/cmd/wails@${{inputs.wails-version}}
