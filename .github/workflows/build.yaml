@@ -29,7 +29,7 @@ jobs:
         with:
           submodules: recursive
       - name: Build .app zip file
-      working-directory: ${{ inputs.app-working-directory }}
-      shell: bash
-      run: |
-        ditto -c -k ${{ inputs.app-working-directory }}/build/bin/${{inputs.build-name}}.app ${{ inputs.app-working-directory }}/build/bin/${{inputs.build-name}}.app.zip
+        working-directory: ${{ inputs.app-working-directory }}
+        shell: bash
+        run: |
+          ditto -c -k ${{ inputs.app-working-directory }}/build/bin/${{inputs.build-name}}.app ${{ inputs.app-working-directory }}/build/bin/${{inputs.build-name}}.app.zip
