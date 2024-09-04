@@ -32,6 +32,5 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '20'
-      - run: npm ci
       - run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
       - run: wails build --platform darwin
