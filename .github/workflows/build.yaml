@@ -31,9 +31,12 @@ jobs:
         with:
           check-latest: true
           go-version: 'stable'
-      - name: Install Wails
-        run: go install github.com/wailsapp/wails/v2/cmd/wails@2.9.1
+      - run: go version
         shell: bash
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
       - name: Install macOS Wails deps
         run: brew install mitchellh/gon/gon
         shell: bash
