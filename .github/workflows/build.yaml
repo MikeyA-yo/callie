@@ -9,7 +9,7 @@ jobs:
       matrix:
         build: [
           {name: wailsTest, platform: linux/amd64, os: ubuntu-latest},
-          {name: wailsTest, platform: windows/amd64, os: windows-latest}
+          {name: wailsTest, platform: windows/amd64, os: windows-latest},
         ]
     runs-on: ${{ matrix.build.os }}
     steps:
@@ -20,17 +20,34 @@ jobs:
         with:
           build-name: ${{ matrix.build.name }}
           build-platform: ${{ matrix.build.platform }}
-
   macos:
-    name: Test Macos
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
         with:
-          go-version: '1.21.6'
-      - uses: actions/setup-node@v3
+          submodules: recursive
+      - name: Setup GoLang
+        uses: actions/setup-go@v4
+        with:
+          check-latest: true
+          go-version: 'stable'
+      - run: go version
+        shell: bash
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
         with:
           node-version: '20'
-      - run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
-      - run: wails build --platform darwin
+      - name: Install Wails
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+      - name: Install macOS Wails deps
+        run: brew install mitchellh/gon/gon nsis
+        shell: bash
+      - name: Build app
+        shell: bash
+        run: |
+          wails build --platform darwin/universal -webview2 download
+          ditto -c -k ./build/bin/Callie.app ./build/bin/Callie.app.zip
+      - name: Building Installer
+        shell: bash
+        run: |
+          productbuild --component ./build/bin/Callie.app ./build/bin/Callie.pkg
