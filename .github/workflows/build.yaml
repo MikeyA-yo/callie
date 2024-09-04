@@ -32,8 +32,7 @@ jobs:
           check-latest: true
           go-version: 'stable'
       - name: Install Wails
-        if: inputs.build == 'true'
-        run: go install github.com/wailsapp/wails/v2/cmd/wails@${{inputs.wails-version}}
+        run: go install github.com/wailsapp/wails/v2/cmd/wails
         shell: bash
       - name: Build .app zip file
         working-directory: ${{ inputs.app-working-directory }}
