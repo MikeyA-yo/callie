@@ -26,6 +26,15 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
+      - name: Setup GoLang
+        uses: actions/setup-go@v4
+        with:
+          check-latest: true
+          go-version: ${{inputs.go-version}}
+      - name: Install Wails
+        if: inputs.build == 'true'
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@${{inputs.wails-version}}
+        shell: bash
       - name: Build .app zip file
         working-directory: ${{ inputs.app-working-directory }}
         shell: bash
