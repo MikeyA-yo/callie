@@ -6,7 +6,9 @@ export default function ChatView(){
 
           </div>
           <div>
-            <input placeholder="Type in a message" />
+            <div>
+              <input placeholder="Type in a message" />
+            </div>
           </div>
         </div>
         </>

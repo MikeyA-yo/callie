@@ -104,8 +104,6 @@ function App() {
       call.on("stream", (stream) => {
         addUser(stream, call.peer);
       });
-    }else{
-      ShowInfo("Turn on Camera, to Join a room", "Error")
     }
   });
   function call(id: string) {
@@ -114,8 +112,6 @@ function App() {
       conn.on("stream", (stream) => {
         addUser(stream, id);
       });
-    }else{
-      ShowInfo("Turn on Camera, to Join a room", "Error")
     }
   }
   // function addMedia(blob:Blob, type:string){
