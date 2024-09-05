@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import { OpenFile, Read, ShowInfo, Stats, Write } from "../wailsjs/go/main/App";
-import Peer, { DataConnection } from "peerjs";
+import Peer from "peerjs";
 import { io } from "socket.io-client";
 import MediaView from "./components/media";
 import ChatView from "./components/chats";
@@ -89,7 +89,7 @@ function App() {
         setImage(false);
         setMp4(false);
         setAudio(false);
-        alert(fileType);
+        ShowInfo(fileType + " is not supported", "Invalid")
         break;
     }
     setFile(file);
