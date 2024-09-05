@@ -89,7 +89,7 @@ function App() {
         setImage(false);
         setMp4(false);
         setAudio(false);
-        ShowInfo(fileType + " is not supported", "Invalid")
+        ShowInfo(fileType + " is not supported", "Invalid");
         break;
     }
     setFile(file);
@@ -191,13 +191,15 @@ function App() {
   }
   return (
     <div className="bg-[#1E201E] text-[#ECDFCC] min-h-screen overflow-auto flex flex-col items-center gap-4 justify-evenly">
-      <div><h1 className="text-3xl">Chat and Stream Online</h1></div>
-      <div className="flex gap-4 w-full justify-center max-h-[80%] overflow-auto">
-        <div className="flex flex-col gap-4 p-2">
+      <div>
+        <h1 className="text-3xl">Chat and Stream Online</h1>
+      </div>
+      <div className="flex gap-4 w-full items-center p-4 justify-evenly max-h-[80%] overflow-auto">
+        <div className="flex flex-col grow gap-4 p-2">
           <div className="flex flex-col text-xl gap-2">
             Enter Room Address:
             <input
-              className="p-2 text-[#697565]"
+              className="p-2 text-[#697565] rounded"
               onChange={(e) => {
                 setRemoteId(e.target.value);
               }}
@@ -230,7 +232,7 @@ function App() {
                 Close Camera
               </button>
             )}
-            <div className="flex gap-2 overflow-auto" id="streams">
+            <div className="flex gap-2 items-center justify-center overflow-auto" id="streams">
               <video
                 autoPlay
                 controls={false}
@@ -256,11 +258,11 @@ function App() {
             </button>
           </div>
         </div>
-        <div className="p-4 flex flex-col gap-2">
+        <div className="p-4 flex flex-col grow gap-2">
           <h2 className="text-2xl"> Chat Box</h2>
           <ChatView />
         </div>
-        <div className="p-4 flex flex-col gap-2">
+        <div className="p-4 flex flex-col grow gap-2">
           <h2 className="text-2xl">Media Display</h2>
           <div className="max-h-96 max-w-96 p-4 bg-[#3C3D37] overflow-auto">
             <MediaView
