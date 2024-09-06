@@ -205,6 +205,11 @@ function App() {
       <div>
         <h1 className="text-3xl">Chat and Stream Online</h1>
       </div>
+      <div className="flex w-full justify-evenly">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
       <div className="flex gap-4 w-full items-center p-4 justify-evenly max-h-[80%] overflow-auto">
         <div className="flex flex-col grow gap-4 p-2">
           <div className="flex flex-col text-xl gap-2">

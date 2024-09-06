@@ -92,6 +92,9 @@ func (a *App) ShowInfo(i, t string) (string, error) {
 func (a *App) GetString(b []byte) string {
 	return gofs.ByteToJsons(b)
 }
+func (a *App) GetByte(s string) []byte {
+	return gofs.JsonToBytes(s)
+}
 
 type FileLoader struct {
 	http.Handler

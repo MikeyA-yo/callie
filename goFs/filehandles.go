@@ -18,3 +18,7 @@ func ByteToJsons(b []byte) string {
 	buf := bytes.NewBuffer(b)
 	return buf.String()
 }
+
+func JsonToBytes(s string) []byte {
+	return []byte(s)
+}
