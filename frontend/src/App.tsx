@@ -5,6 +5,7 @@ import Peer from "peerjs";
 import { io } from "socket.io-client";
 import MediaView from "./components/media";
 import ChatView from "./components/chats";
+import Starters from "./components/starters";
 // const peer = new RTCPeerConnection( {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
 
 export const peer = new Peer();
@@ -33,7 +34,9 @@ function App() {
     document.getElementById(id)?.remove();
   });
   useEffect(()=>{
-    
+    if(!navigator.onLine){
+      ShowInfo("You need to be online to open camera and connect", "Info")
+    }
     socket.on("data", (data) => {
       //todo /// thinking of not implementing this feature and turning it to chat box, pics may work tho
       setChats((prev) => [...prev, data])
@@ -193,6 +196,19 @@ function App() {
       ShowInfo(e.message + " Another app using webcam", "Error");
     }
   }
+  const closeCam = () => {
+    const cam = document.getElementById(
+      "userCam"
+    ) as HTMLVideoElement;
+    const stream = cam.srcObject as MediaStream;
+    const tracks = stream.getTracks();
+    tracks.forEach((track) => {
+      track.stop();
+    });
+    socket.emit("close-cam")
+    cam.srcObject = null;
+    setCamStream(null);
+  }
   async function loadScreen() {
     const media = await navigator.mediaDevices.getDisplayMedia({
       video: true,
@@ -205,11 +221,13 @@ function App() {
       <div>
         <h1 className="text-3xl">Chat and Stream Online</h1>
       </div>
-      <div className="flex w-full justify-evenly">
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
+      <Starters close={()=>{
+        if(!camStream){
+          loadCam();
+        }else{
+          closeCam()
+        }
+      }} join={()=>{}} schedule={()=>{}} text={camStream ? "Close Camera" :"Open Camera"}/>
       <div className="flex gap-4 w-full items-center p-4 justify-evenly max-h-[80%] overflow-auto">
         <div className="flex flex-col grow gap-4 p-2">
           <div className="flex flex-col text-xl gap-2">
@@ -230,26 +248,6 @@ function App() {
             </button>
           </div>
           <div className="flex flex-col gap-4">
-            {camStream && (
-              <button
-              className="p-2 bg-[#3C3D37]"
-                onClick={() => {
-                  const cam = document.getElementById(
-                    "userCam"
-                  ) as HTMLVideoElement;
-                  const stream = cam.srcObject as MediaStream;
-                  const tracks = stream.getTracks();
-                  tracks.forEach((track) => {
-                    track.stop();
-                  });
-                  socket.emit("close-cam")
-                  cam.srcObject = null;
-                  setCamStream(null);
-                }}
-              >
-                Close Camera
-              </button>
-            )}
             <div className="flex gap-2 items-center justify-center overflow-auto" id="streams">
               <video
                 autoPlay
