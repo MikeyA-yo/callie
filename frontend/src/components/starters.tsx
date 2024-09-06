@@ -26,10 +26,10 @@ export default function Starters({
           Join a Meeting
         </div>
         <div
-          className="flex flex-col gap-2 items-center cursor-pointer"
+          className={`flex flex-col gap-2 items-center cursor-pointer p-2 rounded ${text === "Close Camera" ? "bg-[#697565]" : ""}`}
           onClick={close}
         >
-          <VideoSvg className="size-12" />
+          <VideoSvg className={`size-12`} />
           {text}
         </div>
         <div className="flex flex-col gap-2 items-center cursor-pointer" onClick={media}>

@@ -95,6 +95,12 @@ func (a *App) GetString(b []byte) string {
 func (a *App) GetByte(s string) []byte {
 	return gofs.JsonToBytes(s)
 }
+func (a *App) GetUser() string {
+	return gofs.UserBytesToJson()
+}
+func (a *App) EditUser(d string) {
+	gofs.WriteUserData(d)
+}
 
 type FileLoader struct {
 	http.Handler

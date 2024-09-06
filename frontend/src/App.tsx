@@ -6,6 +6,7 @@ import { io } from "socket.io-client";
 import MediaView from "./components/media";
 import ChatView from "./components/chats";
 import Starters from "./components/starters";
+import { UserIntro } from "./components/userinfo";
 // const peer = new RTCPeerConnection( {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
 
 export const peer = new Peer();
@@ -22,12 +23,12 @@ function App() {
   const [chats, setChats] = useState<string[]>([]);
   const [chat, setChat] = useState("");
   const [me, setMe] = useState<Array<boolean>>([]);
-  const [media, setMedia] = useState(false)
+  const [media, setMedia] = useState(false);
+  const [join, setJoin] = useState(false)
   const cam: HTMLVideoElement = document.getElementById(
     "userCam"
   ) as HTMLVideoElement;
   const streams = document.getElementById("streams") as HTMLDivElement;
-  
   socket.on("joined", (id: string) => {
     call(id);
   });
@@ -222,18 +223,21 @@ function App() {
       <div>
         <h1 className="text-3xl">Chat and Stream Online</h1>
       </div>
+      <UserIntro />
       <Starters close={()=>{
         if(!camStream){
           loadCam();
         }else{
           closeCam()
         }
-      }} join={()=>{}} media={()=>{
+      }} join={()=>{
+        setJoin(true)
+      }} media={()=>{
          setMedia(!media)
       }} schedule={()=>{}} text={camStream ? "Close Camera" :"Open Camera"}/>
       <div className="flex gap-4 w-full items-center p-4 justify-evenly max-h-[80%] overflow-auto">
         <div className="flex flex-col grow gap-4 p-2">
-          <div className="flex flex-col text-xl gap-2">
+         {join &&  <div className="flex flex-col text-xl gap-2">
             Enter Room Address:
             <input
               className="p-2 text-[#697565] rounded"
@@ -249,7 +253,7 @@ function App() {
             >
               Join Room
             </button>
-          </div>
+          </div>}
           <div className="flex flex-col gap-4">
             <div className="flex gap-2 items-center justify-center overflow-auto" id="streams">
               <video

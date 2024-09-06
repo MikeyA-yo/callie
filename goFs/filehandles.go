@@ -22,3 +22,18 @@ func ByteToJsons(b []byte) string {
 func JsonToBytes(s string) []byte {
 	return []byte(s)
 }
+
+func GetUserBytes() []byte {
+	os.Mkdir("user", 0750)
+	b, _ := os.ReadFile("user/user.json")
+	return b
+}
+
+func UserBytesToJson() string {
+	return ByteToJsons((GetUserBytes()))
+}
+
+func WriteUserData(d string) {
+	b := []byte(d)
+	os.WriteFile("user/user.json", b, 0666)
+}
