@@ -1,6 +1,7 @@
 package gofs
 
 import (
+	"bytes"
 	"log"
 	"os"
 )
@@ -11,4 +12,9 @@ func ReadFile(name string) []byte {
 		log.Fatal(err)
 	}
 	return data
+}
+
+func ByteToJsons(b []byte) string {
+	buf := bytes.NewBuffer(b)
+	return buf.String()
 }

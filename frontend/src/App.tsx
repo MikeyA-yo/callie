@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { OpenFile, Read, ShowInfo, Stats, Write } from "../wailsjs/go/main/App";
+import { OpenFile, ShowInfo, Stats, Write, Read, GetString } from "../wailsjs/go/main/App";
 import Peer from "peerjs";
 import { io } from "socket.io-client";
 import MediaView from "./components/media";
 import ChatView from "./components/chats";
 // const peer = new RTCPeerConnection( {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
+
 export const peer = new Peer();
-const socket = io(import.meta.env.VITE_SOCK_URL as string);
+const socket = io(import.meta.env.VITE_SOCK_URL as string ?? "https://callie-rooms.zeabur.app/");
 
 function App() {
   const [camStream, setCamStream] = useState<MediaStream | null>();
@@ -21,6 +22,7 @@ function App() {
     "userCam"
   ) as HTMLVideoElement;
   const streams = document.getElementById("streams") as HTMLDivElement;
+  
   // async function write() {
   //   const readData = await Read(file);
   //   const stats = await Stats(file);
@@ -90,11 +92,16 @@ function App() {
         setMp4(false);
         setAudio(false);
         ShowInfo(fileType + " is not supported", "Invalid");
+        printJson(file)
         break;
     }
     setFile(file);
   }
-
+  async function printJson(n: string){
+   let data = await Read(n);
+   let jsson = await GetString(data);
+   return jsson
+  }
   peer.on("open", (id) => {
     setId(id);
   });
@@ -133,6 +140,9 @@ function App() {
       video.className = "max-h-40 max-w-40";
       video.id = id;
       video.srcObject = stream;
+      video.addEventListener("dblclick",()=>{
+        video.requestFullscreen()
+      })
       streams.appendChild(video);
     }
   }
@@ -225,6 +235,7 @@ function App() {
                   tracks.forEach((track) => {
                     track.stop();
                   });
+                  socket.emit("close-cam")
                   cam.srcObject = null;
                   setCamStream(null);
                 }}
@@ -240,6 +251,9 @@ function App() {
                 id="userCam"
                 className="max-h-40 max-w-40"
                 muted
+                onDoubleClick={(e)=>{
+                  e.currentTarget.requestFullscreen()
+                }}
               />
             </div>
             <button

@@ -31,3 +31,13 @@ export default function ChatView({
     </>
   );
 }
+
+export function ChatFrom(){
+  return (
+    <>
+      <div className="bg-[#3C3D37] p-2 rounded">
+         
+      </div>
+    </>
+  )
+}

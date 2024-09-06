@@ -89,8 +89,8 @@ func (a *App) ShowInfo(i, t string) (string, error) {
 	})
 }
 
-func (a *App) GetWsUrl() string {
-	return os.Getenv("WS")
+func (a *App) GetString(b []byte) string {
+	return gofs.ByteToJsons(b)
 }
 
 type FileLoader struct {
