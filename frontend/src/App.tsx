@@ -21,7 +21,8 @@ function App() {
   const [image, setImage] = useState(false);
   const [chats, setChats] = useState<string[]>([]);
   const [chat, setChat] = useState("");
-  const [me, setMe] = useState<Array<boolean>>([])
+  const [me, setMe] = useState<Array<boolean>>([]);
+  const [media, setMedia] = useState(false)
   const cam: HTMLVideoElement = document.getElementById(
     "userCam"
   ) as HTMLVideoElement;
@@ -227,7 +228,9 @@ function App() {
         }else{
           closeCam()
         }
-      }} join={()=>{}} schedule={()=>{}} text={camStream ? "Close Camera" :"Open Camera"}/>
+      }} join={()=>{}} media={()=>{
+         setMedia(!media)
+      }} schedule={()=>{}} text={camStream ? "Close Camera" :"Open Camera"}/>
       <div className="flex gap-4 w-full items-center p-4 justify-evenly max-h-[80%] overflow-auto">
         <div className="flex flex-col grow gap-4 p-2">
           <div className="flex flex-col text-xl gap-2">
@@ -261,14 +264,14 @@ function App() {
                 }}
               />
             </div>
-            <button
+            {/* To turn into the section of mute and unmute <button
             className="p-2 bg-[#3C3D37]"
               onClick={() => {
                 loadCam();
               }}
             >
               Open Camera
-            </button>
+            </button> */}
             <button
             className="p-2 bg-[#3C3D37]"
               onClick={() => {
@@ -295,7 +298,7 @@ function App() {
              }
           }}/>
         </div>
-        <div className="p-4 flex flex-col grow gap-2">
+        {media && <div className="p-4 flex flex-col grow gap-2">
           <h2 className="text-2xl">Media Display</h2>
           <div className="max-h-96 max-w-96 p-4 bg-[#3C3D37] overflow-auto">
             <MediaView
@@ -308,7 +311,7 @@ function App() {
               audio={audio}
             />
           </div>
-        </div>
+        </div>}
       </div>
     </div>
   );

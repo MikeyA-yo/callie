@@ -1,23 +1,40 @@
-export default function Starters({schedule, join, close, text}:{
-  schedule: React.MouseEventHandler<HTMLDivElement>,
-  join: React.MouseEventHandler<HTMLDivElement>,
-  close: React.MouseEventHandler<HTMLDivElement>,
-  text:string
+export default function Starters({
+  schedule,
+  join,
+  close,
+  text,
+  media
+}: {
+  schedule: React.MouseEventHandler<HTMLDivElement>;
+  join: React.MouseEventHandler<HTMLDivElement>;
+  close: React.MouseEventHandler<HTMLDivElement>;
+  text: string;
+  media:React.MouseEventHandler<HTMLDivElement>
 }) {
   return (
     <>
       <div className="flex w-full justify-evenly">
-        <div className="flex flex-col gap-2 items-center cursor-pointer" onClick={schedule}>
+        <div
+          className="flex flex-col gap-2 items-center cursor-pointer"
+          onClick={schedule}
+        >
           <CalenderSvg className="size-12 fill-[#ECDFCC]" />
           Schedule a meeting
         </div>
-        <div className="flex flex-col gap-2 items-center cursor-pointer">
+        <div className="flex flex-col gap-2 items-center cursor-pointer" onClick={join}>
           <JoinSvg />
           Join a Meeting
         </div>
-        <div className="flex flex-col gap-2 items-center cursor-pointer" onClick={close}>
-           <VideoSvg className="size-12" />
-            {text}
+        <div
+          className="flex flex-col gap-2 items-center cursor-pointer"
+          onClick={close}
+        >
+          <VideoSvg className="size-12" />
+          {text}
+        </div>
+        <div className="flex flex-col gap-2 items-center cursor-pointer" onClick={media}>
+            <MediaSvg />
+            Toggle Media
         </div>
       </div>
     </>
@@ -43,7 +60,7 @@ function VideoSvg(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-function MicSvg() {
+export function MicSvg() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -83,6 +100,24 @@ function JoinSvg() {
         strokeLinecap="round"
         strokeLinejoin="round"
         d="M12 4.5v15m7.5-7.5h-15"
+      />
+    </svg>
+  );
+}
+function MediaSvg() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className="size-12"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
       />
     </svg>
   );
