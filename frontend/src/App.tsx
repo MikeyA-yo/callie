@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { OpenFile, ShowInfo, Stats, Write, Read, GetString } from "../wailsjs/go/main/App";
+import {
+  OpenFile,
+  ShowInfo,
+  Stats,
+  Write,
+  Read,
+  GetString,
+} from "../wailsjs/go/main/App";
 import Peer from "peerjs";
 import { io } from "socket.io-client";
 import MediaView from "./components/media";
@@ -10,7 +17,10 @@ import { UserIntro } from "./components/userinfo";
 // const peer = new RTCPeerConnection( {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
 
 export const peer = new Peer();
-const socket = io(import.meta.env.VITE_SOCK_URL as string ?? "https://callie-rooms.zeabur.app/");
+const socket = io(
+  (import.meta.env.VITE_SOCK_URL as string) ??
+    "https://callie-rooms.zeabur.app/"
+);
 
 function App() {
   const [camStream, setCamStream] = useState<MediaStream | null>();
@@ -24,7 +34,7 @@ function App() {
   const [chat, setChat] = useState("");
   const [me, setMe] = useState<Array<boolean>>([]);
   const [media, setMedia] = useState(false);
-  const [join, setJoin] = useState(false)
+  const [join, setJoin] = useState(false);
   const cam: HTMLVideoElement = document.getElementById(
     "userCam"
   ) as HTMLVideoElement;
@@ -35,23 +45,23 @@ function App() {
   socket.on("user-disconnected", (id: string) => {
     document.getElementById(id)?.remove();
   });
-  useEffect(()=>{
-    if(!navigator.onLine){
-      ShowInfo("You need to be online to open camera and connect", "Info")
+  useEffect(() => {
+    if (!navigator.onLine) {
+      ShowInfo("You need to be online to open camera and connect", "Info");
     }
     socket.on("data", (data) => {
       //todo /// thinking of not implementing this feature and turning it to chat box, pics may work tho
-      setChats((prev) => [...prev, data])
-      setMe((prev) => [...prev, false])
+      setChats((prev) => [...prev, data]);
+      setMe((prev) => [...prev, false]);
     });
-  }, [])
-  
-  useEffect(()=>{
+  }, []);
+
+  useEffect(() => {
     let container = document.getElementById("chats");
-    if(container){
+    if (container) {
       container.scrollTop = container.scrollHeight;
     }
-  }, [chats, me])
+  }, [chats, me]);
   function joinRoom(roomId: string, userId: string) {
     socket.emit("join-room", roomId, userId);
   }
@@ -112,10 +122,10 @@ function App() {
     }
     setFile(file);
   }
-  async function printJson(n: string){
-   let data = await Read(n);
-   let jsson = await GetString(data);
-   return jsson
+  async function printJson(n: string) {
+    let data = await Read(n);
+    let jsson = await GetString(data);
+    return jsson;
   }
   peer.on("open", (id) => {
     setId(id);
@@ -136,7 +146,7 @@ function App() {
       });
     }
   }
-  
+
   function addUser(stream: MediaStream, id: string) {
     const existing = document.getElementById(id);
     if (!existing) {
@@ -146,9 +156,9 @@ function App() {
       video.className = "max-h-40 max-w-40";
       video.id = id;
       video.srcObject = stream;
-      video.addEventListener("dblclick",()=>{
-        video.requestFullscreen()
-      })
+      video.addEventListener("dblclick", () => {
+        video.requestFullscreen();
+      });
       streams.appendChild(video);
     }
   }
@@ -157,7 +167,7 @@ function App() {
       cam.srcObject = camStream as MediaProvider;
     }
   }, [camStream]);
-  
+
   async function loadCam() {
     try {
       const media = await navigator.mediaDevices.getUserMedia({
@@ -199,18 +209,16 @@ function App() {
     }
   }
   const closeCam = () => {
-    const cam = document.getElementById(
-      "userCam"
-    ) as HTMLVideoElement;
+    const cam = document.getElementById("userCam") as HTMLVideoElement;
     const stream = cam.srcObject as MediaStream;
     const tracks = stream.getTracks();
     tracks.forEach((track) => {
       track.stop();
     });
-    socket.emit("close-cam")
+    socket.emit("close-cam");
     cam.srcObject = null;
     setCamStream(null);
-  }
+  };
   async function loadScreen() {
     const media = await navigator.mediaDevices.getDisplayMedia({
       video: true,
@@ -223,48 +231,60 @@ function App() {
       <div>
         <h1 className="text-3xl">Chat and Stream Online</h1>
       </div>
+      <Starters
+        close={() => {
+          if (!camStream) {
+            loadCam();
+          } else {
+            closeCam();
+          }
+        }}
+        join={() => {
+          setJoin(true);
+        }}
+        media={() => {
+          setMedia(!media);
+        }}
+        schedule={() => {}}
+        text={camStream ? "Close Camera" : "Open Camera"}
+      />
       <UserIntro />
-      <Starters close={()=>{
-        if(!camStream){
-          loadCam();
-        }else{
-          closeCam()
-        }
-      }} join={()=>{
-        setJoin(true)
-      }} media={()=>{
-         setMedia(!media)
-      }} schedule={()=>{}} text={camStream ? "Close Camera" :"Open Camera"}/>
       <div className="flex gap-4 w-full items-center p-4 justify-evenly max-h-[80%] overflow-auto">
         <div className="flex flex-col grow gap-4 p-2">
-         {join &&  <div className="flex flex-col text-xl gap-2">
-            Enter Room Address:
-            <input
-              className="p-2 text-[#697565] rounded"
-              onChange={(e) => {
-                setRemoteId(e.target.value);
-              }}
-            />
-            <button
-              className="p-2 bg-[#3C3D37]"
-              onClick={() => {
-                joinRoom(remoteId, id);
-              }}
-            >
-              Join Room
-            </button>
-          </div>}
+          {join && (
+            <div className="flex flex-col text-xl gap-2">
+              Enter Room Address:
+              <input
+                className="p-2 text-[#697565] rounded"
+                placeholder="my-room-adress"
+                onChange={(e) => {
+                  setRemoteId(e.target.value);
+                }}
+              />
+              <button
+                className="p-2 bg-[#3C3D37]"
+                onClick={() => {
+                  joinRoom(remoteId, id);
+                }}
+              >
+                Join Room
+              </button>
+            </div>
+          )}
           <div className="flex flex-col gap-4">
-            <div className="flex gap-2 items-center justify-center overflow-auto" id="streams">
+            <div
+              className="flex gap-2 items-center justify-center max-w-60 overflow-auto"
+              id="streams"
+            >
               <video
                 autoPlay
                 controls={false}
                 playsInline
                 id="userCam"
-                className="max-h-40 max-w-40"
+                className="max-h-44 max-w-44"
                 muted
-                onDoubleClick={(e)=>{
-                  e.currentTarget.requestFullscreen()
+                onDoubleClick={(e) => {
+                  e.currentTarget.requestFullscreen();
                 }}
               />
             </div>
@@ -277,7 +297,7 @@ function App() {
               Open Camera
             </button> */}
             <button
-            className="p-2 bg-[#3C3D37]"
+              className="p-2 bg-[#3C3D37]"
               onClick={() => {
                 loadScreen();
               }}
@@ -288,34 +308,43 @@ function App() {
         </div>
         <div className="p-4 flex flex-col grow gap-2">
           <h2 className="text-2xl"> Chat Box</h2>
-          <ChatView chats={chats} me={me} input={(e)=>{
-            setChat(e.target.value)
-          }} send={()=>{
-            socket.emit("chat", chat)
-            setChats(prev => [...prev, chat])
-            setMe(prev => [...prev, true])
-          }} enterSend={(e)=>{
-             if(e.key === "Enter"){
-              socket.emit("chat", chat)
-              setChats(prev => [...prev, chat])
-              setMe(prev => [...prev, true])
-             }
-          }}/>
+          <ChatView
+            chats={chats}
+            me={me}
+            input={(e) => {
+              setChat(e.target.value);
+            }}
+            send={() => {
+              socket.emit("chat", chat);
+              setChats((prev) => [...prev, chat]);
+              setMe((prev) => [...prev, true]);
+            }}
+            enterSend={(e) => {
+              if (e.key === "Enter") {
+                socket.emit("chat", chat);
+                e.currentTarget.value = "";
+                setChats((prev) => [...prev, chat]);
+                setMe((prev) => [...prev, true]);
+              }
+            }}
+          />
         </div>
-        {media && <div className="p-4 flex flex-col grow gap-2">
-          <h2 className="text-2xl">Media Display</h2>
-          <div className="max-h-96 max-w-96 p-4 bg-[#3C3D37] overflow-auto">
-            <MediaView
-              open={() => {
-                Open();
-              }}
-              file={file}
-              mp4={mp4}
-              image={image}
-              audio={audio}
-            />
+        {media && (
+          <div className="p-4 flex flex-col grow gap-2">
+            <h2 className="text-2xl">Media Display</h2>
+            <div className="max-h-96 max-w-96 p-4 bg-[#3C3D37] overflow-auto">
+              <MediaView
+                open={() => {
+                  Open();
+                }}
+                file={file}
+                mp4={mp4}
+                image={image}
+                audio={audio}
+              />
+            </div>
           </div>
-        </div>}
+        )}
       </div>
     </div>
   );
