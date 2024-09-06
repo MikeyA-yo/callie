@@ -37,7 +37,7 @@ export default function MediaView({
           ></audio>
         )}
         <div className="flex  items-center justify-center">
-          <button onClick={open}>Open File</button>
+          <button className="p-2 bg-[#3C3D37]" onClick={open}>Open File</button>
         </div>
       </div>
     </>

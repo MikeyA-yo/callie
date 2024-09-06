@@ -18,25 +18,35 @@ function App() {
   const [remoteId, setRemoteId] = useState("");
   const [mp4, setMp4] = useState(false);
   const [image, setImage] = useState(false);
+  const [chats, setChats] = useState<string[]>([]);
+  const [chat, setChat] = useState("");
+  const [me, setMe] = useState<Array<boolean>>([])
   const cam: HTMLVideoElement = document.getElementById(
     "userCam"
   ) as HTMLVideoElement;
   const streams = document.getElementById("streams") as HTMLDivElement;
   
-  // async function write() {
-  //   const readData = await Read(file);
-  //   const stats = await Stats(file);
-  //   await Write(stats.name, readData);
-  // }
   socket.on("joined", (id: string) => {
     call(id);
   });
   socket.on("user-disconnected", (id: string) => {
     document.getElementById(id)?.remove();
   });
-  socket.on("data", (data) => {
-    //todo /// thinking of not implementing this feature and turning it to chat box, pics may work tho
-  });
+  useEffect(()=>{
+    
+    socket.on("data", (data) => {
+      //todo /// thinking of not implementing this feature and turning it to chat box, pics may work tho
+      setChats((prev) => [...prev, data])
+      setMe((prev) => [...prev, false])
+    });
+  }, [])
+  
+  useEffect(()=>{
+    let container = document.getElementById("chats");
+    if(container){
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [chats, me])
   function joinRoom(roomId: string, userId: string) {
     socket.emit("join-room", roomId, userId);
   }
@@ -92,7 +102,7 @@ function App() {
         setMp4(false);
         setAudio(false);
         ShowInfo(fileType + " is not supported", "Invalid");
-        printJson(file)
+        //printJson(file)
         break;
     }
     setFile(file);
@@ -121,16 +131,7 @@ function App() {
       });
     }
   }
-  // function addMedia(blob:Blob, type:string){
-  //   const element = type !== "unkown" ? document.createElement(type) : null;
-  //   if(element){
-  //     let mediaElement = element as HTMLMediaElement
-  //     let url = URL.createObjectURL(blob);
-  //     mediaElement.src = url;
-  //     if(type === "video") mediaElement.controls = true;
-  //     streams.appendChild(mediaElement)
-  //   }
-  // }
+  
   function addUser(stream: MediaStream, id: string) {
     const existing = document.getElementById(id);
     if (!existing) {
@@ -151,7 +152,7 @@ function App() {
       cam.srcObject = camStream as MediaProvider;
     }
   }, [camStream]);
-
+  
   async function loadCam() {
     try {
       const media = await navigator.mediaDevices.getUserMedia({
@@ -215,7 +216,7 @@ function App() {
               }}
             />
             <button
-              className="p-2"
+              className="p-2 bg-[#3C3D37]"
               onClick={() => {
                 joinRoom(remoteId, id);
               }}
@@ -226,6 +227,7 @@ function App() {
           <div className="flex flex-col gap-4">
             {camStream && (
               <button
+              className="p-2 bg-[#3C3D37]"
                 onClick={() => {
                   const cam = document.getElementById(
                     "userCam"
@@ -257,6 +259,7 @@ function App() {
               />
             </div>
             <button
+            className="p-2 bg-[#3C3D37]"
               onClick={() => {
                 loadCam();
               }}
@@ -264,6 +267,7 @@ function App() {
               Open Camera
             </button>
             <button
+            className="p-2 bg-[#3C3D37]"
               onClick={() => {
                 loadScreen();
               }}
@@ -274,7 +278,19 @@ function App() {
         </div>
         <div className="p-4 flex flex-col grow gap-2">
           <h2 className="text-2xl"> Chat Box</h2>
-          <ChatView />
+          <ChatView chats={chats} me={me} input={(e)=>{
+            setChat(e.target.value)
+          }} send={()=>{
+            socket.emit("chat", chat)
+            setChats(prev => [...prev, chat])
+            setMe(prev => [...prev, true])
+          }} enterSend={(e)=>{
+             if(e.key === "Enter"){
+              socket.emit("chat", chat)
+              setChats(prev => [...prev, chat])
+              setMe(prev => [...prev, true])
+             }
+          }}/>
         </div>
         <div className="p-4 flex flex-col grow gap-2">
           <h2 className="text-2xl">Media Display</h2>

@@ -1,19 +1,31 @@
 export default function ChatView({
+  chats,
   send,
+  input,
+  me,
+  enterSend
 }: {
-  send?: React.MouseEventHandler<HTMLDivElement>;
+  send: React.MouseEventHandler<HTMLDivElement>;
+  chats:string[],
+  input:React.ChangeEventHandler<HTMLInputElement>,
+  me:boolean[],
+  enterSend:React.KeyboardEventHandler<HTMLInputElement>
 }) {
   return (
     <>
       <div className="bg-[#3C3D37] p-4 flex flex-col w-full gap-2">
         <div
           id="chats"
-          className="min-h-52 max-h-[25rem] bg-[#697565]  overflow-auto"
-        ></div>
+          className="min-h-52 max-h-[25rem] p-3 flex flex-col gap-3 bg-[#697565]  overflow-auto"
+        >
+          {chats.map((chat, i) => <Chat message={chat} me={me[i]} />)}
+        </div>
         <div className="mx-auto">
           <div className="bg-[#3C3D37] flex items-center gap-2 w-full">
             <input
-              className="p-2 text-[#697565] bg-[#3C3D37] rounded border border-[#ECDFCC] outline-none"
+              onChange={input}
+              onKeyDown={enterSend}
+              className="p-2 text-[#ECDFCC] bg-[#3C3D37] rounded border border-[#ECDFCC] outline-none"
               placeholder="Type in a message here"
             />
             <div onClick={send}>
@@ -32,11 +44,11 @@ export default function ChatView({
   );
 }
 
-export function ChatFrom(){
+export function Chat({message, me}:{message:string, me?:boolean}){
   return (
     <>
-      <div className="bg-[#3C3D37] p-2 rounded">
-         
+      <div className={`bg-[#3C3D37] p-2 w-1/2 rounded ${me && "self-end"}`}>
+         {message}
       </div>
     </>
   )
