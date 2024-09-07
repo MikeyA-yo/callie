@@ -23,7 +23,7 @@ func main() {
 	err := wails.Run(&options.App{
 		Title:  "Callie",
 		Width:  1024,
-		Height: 600,
+		Height: 720,
 		AssetServer: &assetserver.Options{
 			Assets:  assets,
 			Handler: NewFileLoader(),

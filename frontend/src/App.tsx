@@ -7,6 +7,7 @@ import {
   Write,
   Read,
   GetString,
+  GetUser,
 } from "../wailsjs/go/main/App";
 import Peer from "peerjs";
 import { io } from "socket.io-client";
@@ -35,6 +36,7 @@ function App() {
   const [me, setMe] = useState<Array<boolean>>([]);
   const [media, setMedia] = useState(false);
   const [join, setJoin] = useState(false);
+  const [person, setPerson] = useState<any>()
   const cam: HTMLVideoElement = document.getElementById(
     "userCam"
   ) as HTMLVideoElement;
@@ -54,6 +56,11 @@ function App() {
       setChats((prev) => [...prev, data]);
       setMe((prev) => [...prev, false]);
     });
+    async function loadUser(){
+      let person = await GetUser();
+      person.length > 4 && setPerson(JSON.parse(person))
+    }
+    loadUser()
   }, []);
 
   useEffect(() => {
@@ -153,7 +160,7 @@ function App() {
       const video = document.createElement("video");
       video.autoplay = true;
       video.controls = false;
-      video.className = "max-h-40 max-w-40";
+      video.className = "max-h-44 max-w-44";
       video.id = id;
       video.srcObject = stream;
       video.addEventListener("dblclick", () => {
@@ -273,7 +280,7 @@ function App() {
           )}
           <div className="flex flex-col gap-4">
             <div
-              className="flex gap-2 items-center justify-center max-w-60 overflow-auto"
+              className="flex gap-2 items-center justify-center max-w-[25rem] overflow-auto"
               id="streams"
             >
               <video
@@ -315,13 +322,17 @@ function App() {
               setChat(e.target.value);
             }}
             send={() => {
-              socket.emit("chat", chat);
+              socket.emit("chat", chat, person.username);
               setChats((prev) => [...prev, chat]);
               setMe((prev) => [...prev, true]);
+              if(document.getElementById("chat-input")){
+                const input = document.getElementById("chat-input") as HTMLInputElement;
+                input.value = ""
+              }
             }}
             enterSend={(e) => {
               if (e.key === "Enter") {
-                socket.emit("chat", chat);
+                socket.emit("chat", chat, person.username);
                 e.currentTarget.value = "";
                 setChats((prev) => [...prev, chat]);
                 setMe((prev) => [...prev, true]);

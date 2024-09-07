@@ -25,6 +25,7 @@ export default function ChatView({
             <input
               onChange={input}
               onKeyDown={enterSend}
+              id="chat-input"
               className="p-2 text-[#ECDFCC] bg-[#3C3D37] rounded border border-[#ECDFCC] outline-none"
               placeholder="Type in a message here"
             />
