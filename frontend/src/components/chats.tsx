@@ -3,13 +3,15 @@ export default function ChatView({
   send,
   input,
   me,
-  enterSend
+  enterSend,
+  senders
 }: {
   send: React.MouseEventHandler<HTMLDivElement>;
   chats:string[],
   input:React.ChangeEventHandler<HTMLInputElement>,
   me:boolean[],
-  enterSend:React.KeyboardEventHandler<HTMLInputElement>
+  enterSend:React.KeyboardEventHandler<HTMLInputElement>,
+  senders: string[]
 }) {
   return (
     <>
@@ -18,7 +20,7 @@ export default function ChatView({
           id="chats"
           className="min-h-52 max-h-[25rem] p-3 flex flex-col gap-3 bg-[#697565]  overflow-auto"
         >
-          {chats.map((chat, i) => <Chat message={chat} me={me[i]} />)}
+          {chats.map((chat, i) => <Chat message={chat} me={me[i]} sender={senders[i]} />)}
         </div>
         <div className="mx-auto">
           <div className="bg-[#3C3D37] flex items-center gap-2 w-full">
@@ -45,11 +47,12 @@ export default function ChatView({
   );
 }
 
-export function Chat({message, me}:{message:string, me?:boolean}){
+export function Chat({message, me, sender}:{message:string, me:boolean, sender?:string}){
   return (
     <>
-      <div className={`bg-[#3C3D37] p-2 w-1/2 rounded ${me && "self-end"}`}>
-         {message}
+      <div className={`bg-[#3C3D37] flex flex-col gap-1 p-2 max-w-[50%] min-w-[25%] rounded ${me && "self-end"}`}>
+         <p className="text-xs self-end">{sender}</p>
+         <p className="text-base self-start">{message}</p>
       </div>
     </>
   )

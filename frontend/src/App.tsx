@@ -13,7 +13,7 @@ import Peer from "peerjs";
 import { io } from "socket.io-client";
 import MediaView from "./components/media";
 import ChatView from "./components/chats";
-import Starters from "./components/starters";
+import Starters, { MicSvg, VideoSvg } from "./components/starters";
 import { UserIntro } from "./components/userinfo";
 // const peer = new RTCPeerConnection( {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
 
@@ -36,7 +36,8 @@ function App() {
   const [me, setMe] = useState<Array<boolean>>([]);
   const [media, setMedia] = useState(false);
   const [join, setJoin] = useState(false);
-  const [person, setPerson] = useState<any>()
+  const [person, setPerson] = useState<any>();
+  const [senders, setSenders] = useState<Array<string>>([]);
   const cam: HTMLVideoElement = document.getElementById(
     "userCam"
   ) as HTMLVideoElement;
@@ -51,16 +52,17 @@ function App() {
     if (!navigator.onLine) {
       ShowInfo("You need to be online to open camera and connect", "Info");
     }
-    socket.on("data", (data) => {
+    socket.on("data", (data, from) => {
       //todo /// thinking of not implementing this feature and turning it to chat box, pics may work tho
       setChats((prev) => [...prev, data]);
       setMe((prev) => [...prev, false]);
+      setSenders((prev) => [...prev, from]);
     });
-    async function loadUser(){
+    async function loadUser() {
       let person = await GetUser();
-      person.length > 4 && setPerson(JSON.parse(person))
+      person.length > 4 && setPerson(JSON.parse(person));
     }
-    loadUser()
+    loadUser();
   }, []);
 
   useEffect(() => {
@@ -157,6 +159,8 @@ function App() {
   function addUser(stream: MediaStream, id: string) {
     const existing = document.getElementById(id);
     if (!existing) {
+      const div = document.createElement("div");
+      div.id = id.substring(0, id.indexOf("-"));
       const video = document.createElement("video");
       video.autoplay = true;
       video.controls = false;
@@ -166,7 +170,8 @@ function App() {
       video.addEventListener("dblclick", () => {
         video.requestFullscreen();
       });
-      streams.appendChild(video);
+      div.appendChild(video);
+      streams.appendChild(div);
     }
   }
   useEffect(() => {
@@ -238,6 +243,7 @@ function App() {
       <div>
         <h1 className="text-3xl">Chat and Stream Online</h1>
       </div>
+      <UserIntro />
       <Starters
         close={() => {
           if (!camStream) {
@@ -255,7 +261,6 @@ function App() {
         schedule={() => {}}
         text={camStream ? "Close Camera" : "Open Camera"}
       />
-      <UserIntro />
       <div className="flex gap-4 w-full items-center p-4 justify-evenly max-h-[80%] overflow-auto">
         <div className="flex flex-col grow gap-4 p-2">
           {join && (
@@ -283,34 +288,25 @@ function App() {
               className="flex gap-2 items-center justify-center max-w-[25rem] overflow-auto"
               id="streams"
             >
-              <video
-                autoPlay
-                controls={false}
-                playsInline
-                id="userCam"
-                className="max-h-44 max-w-44"
-                muted
-                onDoubleClick={(e) => {
-                  e.currentTarget.requestFullscreen();
-                }}
-              />
+              <div className="flex flex-col items-center gap-2">
+                <video
+                  autoPlay
+                  controls={false}
+                  playsInline
+                  id="userCam"
+                  className="max-h-44 max-w-44"
+                  muted
+                  onDoubleClick={(e) => {
+                    e.currentTarget.requestFullscreen();
+                  }}
+                />
+                {camStream && (
+                  <div className="flex gap-1 justify-around">
+                    <MicSvg /> <VideoSvg className="size-6" />
+                  </div>
+                )}
+              </div>
             </div>
-            {/* To turn into the section of mute and unmute <button
-            className="p-2 bg-[#3C3D37]"
-              onClick={() => {
-                loadCam();
-              }}
-            >
-              Open Camera
-            </button> */}
-            <button
-              className="p-2 bg-[#3C3D37]"
-              onClick={() => {
-                loadScreen();
-              }}
-            >
-              Share Screen
-            </button>
           </div>
         </div>
         <div className="p-4 flex flex-col grow gap-2">
@@ -318,6 +314,7 @@ function App() {
           <ChatView
             chats={chats}
             me={me}
+            senders={senders}
             input={(e) => {
               setChat(e.target.value);
             }}
@@ -325,9 +322,12 @@ function App() {
               socket.emit("chat", chat, person.username);
               setChats((prev) => [...prev, chat]);
               setMe((prev) => [...prev, true]);
-              if(document.getElementById("chat-input")){
-                const input = document.getElementById("chat-input") as HTMLInputElement;
-                input.value = ""
+              setSenders((prev) => [...prev, person.username]);
+              if (document.getElementById("chat-input")) {
+                const input = document.getElementById(
+                  "chat-input"
+                ) as HTMLInputElement;
+                input.value = "";
               }
             }}
             enterSend={(e) => {
@@ -336,6 +336,7 @@ function App() {
                 e.currentTarget.value = "";
                 setChats((prev) => [...prev, chat]);
                 setMe((prev) => [...prev, true]);
+                setSenders((prev) => [...prev, person.username]);
               }
             }}
           />

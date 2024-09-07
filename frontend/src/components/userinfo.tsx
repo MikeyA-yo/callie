@@ -23,7 +23,7 @@ export function UserIntro(){
         <>
           {!userOb && 
           <div className="flex flex-col items-center w-full gap-1">
-            <h1>Hello user, you don't have a name Set-up, let's do that</h1>
+            <h1 className="text-2xl">Hello user, you don't have a name Set-up, let's do that</h1>
              <div className="flex flex-col w-full gap-2 items-center">
                 <p>Name: </p>
                 <input className="p-2 rounded text-[#3C3D37]" placeholder="Full Name" name="name" id="n" onChange={(e)=>{
@@ -58,8 +58,9 @@ export function UserIntro(){
           </div>
             }
             {userOb &&
-            <div>
-                Hey {userOb.name}
+            <div className="p-2">
+                <h1 className="text-2xl">Hey {userOb.name}, Welcome to Callie</h1>
+                <p className="text-xl mt-2">Start Here: </p>
             </div>
 
             }
