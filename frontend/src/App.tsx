@@ -13,7 +13,7 @@ import Peer from "peerjs";
 import { io } from "socket.io-client";
 import MediaView from "./components/media";
 import ChatView from "./components/chats";
-import Starters, { MicSvg, VideoSvg } from "./components/starters";
+import Starters, { Mute, OffCam } from "./components/starters";
 import { UserIntro } from "./components/userinfo";
 // const peer = new RTCPeerConnection( {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
 
@@ -58,6 +58,12 @@ function App() {
       setMe((prev) => [...prev, false]);
       setSenders((prev) => [...prev, from]);
     });
+    socket.on("muted", (id) =>{
+      if(document.getElementById(id)){
+        let vid = document.getElementById(id) as HTMLVideoElement;
+        vid.muted = !vid.muted
+      }
+    })
     async function loadUser() {
       let person = await GetUser();
       person.length > 4 && setPerson(JSON.parse(person));
@@ -159,8 +165,8 @@ function App() {
   function addUser(stream: MediaStream, id: string) {
     const existing = document.getElementById(id);
     if (!existing) {
-      const div = document.createElement("div");
-      div.id = id.substring(0, id.indexOf("-"));
+      // const div = document.createElement("div");
+      // div.id = id.substring(0, id.indexOf("-"));
       const video = document.createElement("video");
       video.autoplay = true;
       video.controls = false;
@@ -170,8 +176,7 @@ function App() {
       video.addEventListener("dblclick", () => {
         video.requestFullscreen();
       });
-      div.appendChild(video);
-      streams.appendChild(div);
+      streams.appendChild(video);
     }
   }
   useEffect(() => {
@@ -300,11 +305,13 @@ function App() {
                     e.currentTarget.requestFullscreen();
                   }}
                 />
-                {camStream && (
-                  <div className="flex gap-1 justify-around">
-                    <MicSvg /> <VideoSvg className="size-6" />
-                  </div>
-                )}
+                {camStream && <div className="flex gap-1">
+                   <Mute mute={()=>{
+                    socket.emit("mute", peer.id)
+                   }} /> <OffCam off={()=>{
+                    socket.emit("off", peer.id)
+                   }} />
+                </div>}
               </div>
             </div>
           </div>

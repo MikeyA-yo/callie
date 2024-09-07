@@ -40,7 +40,12 @@ export default function Starters({
     </>
   );
 }
-
+export function Mute({mute}:{mute:React.MouseEventHandler<SVGSVGElement>}){
+  return <MicSvg  onClick={mute} />
+}  
+export function OffCam({off}:{off:React.MouseEventHandler<SVGSVGElement>}){
+  return <VideoSvg className="size-6" onClick={off} />
+}
 export function VideoSvg(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -60,7 +65,7 @@ export function VideoSvg(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-export function MicSvg() {
+export function MicSvg(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -69,6 +74,7 @@ export function MicSvg() {
       strokeWidth={1.5}
       stroke="currentColor"
       className="size-6"
+      {...props}
     >
       <path
         strokeLinecap="round"
