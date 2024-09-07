@@ -51,9 +51,6 @@ function App() {
   const streams = document.getElementById("streams") as HTMLDivElement;
   
  
-    socket.on("joined", (id: string) => {
-      call(id);
-    });
  
   useEffect(() => {
     if (!navigator.onLine) {
@@ -92,6 +89,9 @@ function App() {
   }, [chats, me]);
   function joinRoom(roomId: string, userId: string, uname: string) {
     socket.emit("join-room", roomId, userId, uname);
+    socket.on("joined", (id: string) => {
+      call(id);
+    });
   }
   async function Open() {
     let file = await OpenFile();
