@@ -3,13 +3,13 @@ export default function Starters({
   join,
   close,
   text,
-  media
+  media,
 }: {
   schedule: React.MouseEventHandler<HTMLDivElement>;
   join: React.MouseEventHandler<HTMLDivElement>;
   close: React.MouseEventHandler<HTMLDivElement>;
   text: string;
-  media:React.MouseEventHandler<HTMLDivElement>
+  media: React.MouseEventHandler<HTMLDivElement>;
 }) {
   return (
     <>
@@ -21,30 +21,62 @@ export default function Starters({
           <CalenderSvg className="size-12 fill-[#ECDFCC]" />
           Schedule a meeting
         </div>
-        <div className="flex flex-col gap-2 items-center cursor-pointer" onClick={join}>
+        <div
+          className="flex flex-col gap-2 items-center cursor-pointer"
+          onClick={join}
+        >
           <JoinSvg />
           Join a Meeting
         </div>
         <div
-          className={`flex flex-col gap-2 items-center cursor-pointer p-2 rounded ${text === "Close Camera" ? "bg-[#697565]" : ""}`}
+          className={`flex flex-col gap-2 items-center cursor-pointer p-2 rounded ${
+            text === "Close Camera" ? "bg-[#697565]" : ""
+          }`}
           onClick={close}
         >
           <VideoSvg className={`size-12`} />
           {text}
         </div>
-        <div className="flex flex-col gap-2 items-center cursor-pointer" onClick={media}>
-            <MediaSvg />
-            Toggle Media
+        <div
+          className="flex flex-col gap-2 items-center cursor-pointer"
+          onClick={media}
+        >
+          <MediaSvg />
+          Toggle Media
         </div>
       </div>
     </>
   );
 }
-export function Mute({mute}:{mute:React.MouseEventHandler<SVGSVGElement>}){
-  return <MicSvg  onClick={mute} />
-}  
-export function OffCam({off}:{off:React.MouseEventHandler<SVGSVGElement>}){
-  return <VideoSvg className="size-6" onClick={off} />
+export function Mute({
+  mute,
+  muted
+}: {
+  mute: React.MouseEventHandler<SVGSVGElement>;
+  muted?:boolean
+}) {
+  let clString = muted ? "cursor-pointer" : "rounded-full p-2 bg-[#ECDFCC] text-[#697565] cursor-pointer"
+  return (
+    <>
+      <div className={clString}>
+        <MicSvg onClick={mute} />
+      </div>
+    </>
+  );
+}
+export function OffCam({
+  off,
+  offed
+}: {
+  off: React.MouseEventHandler<SVGSVGElement>;
+  offed?:boolean
+}) {
+  let clString = offed ? "cursor-pointer" : "rounded-full p-2 bg-[#ECDFCC] text-[#697565] cursor-pointer"
+  return (
+    <div className={clString}>
+      <VideoSvg className="size-6" onClick={off} />
+    </div>
+  );
 }
 export function VideoSvg(props: React.SVGProps<SVGSVGElement>) {
   return (

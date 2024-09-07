@@ -12,7 +12,7 @@ import {
 import Peer from "peerjs";
 import { io } from "socket.io-client";
 import MediaView from "./components/media";
-import ChatView from "./components/chats";
+import ChatView, { ChatIcon } from "./components/chats";
 import Starters, { Mute, OffCam } from "./components/starters";
 import { UserIntro } from "./components/userinfo";
 // const peer = new RTCPeerConnection( {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
@@ -24,6 +24,9 @@ const socket = io(
 );
 
 function App() {
+  //This is a very terrible way to write react code, don't do this
+  //I didn't know this would escalate into something so large
+  //I repeat never write code as ugly as this.
   const [camStream, setCamStream] = useState<MediaStream | null>();
   const [id, setId] = useState("");
   const [audio, setAudio] = useState(false);
@@ -35,34 +38,44 @@ function App() {
   const [chat, setChat] = useState("");
   const [me, setMe] = useState<Array<boolean>>([]);
   const [media, setMedia] = useState(false);
+  const [conns, setConns] = useState<Array<string>>([]);
   const [join, setJoin] = useState(false);
   const [person, setPerson] = useState<any>();
   const [senders, setSenders] = useState<Array<string>>([]);
+  const [muted, setMuted] = useState(false);
+  const [offed, setOffed] = useState(false);
+  const [showChat, setShowChat] = useState(false)
   const cam: HTMLVideoElement = document.getElementById(
     "userCam"
   ) as HTMLVideoElement;
   const streams = document.getElementById("streams") as HTMLDivElement;
-  socket.on("joined", (id: string) => {
-    call(id);
-  });
-  socket.on("user-disconnected", (id: string) => {
-    document.getElementById(id)?.remove();
-  });
+  
+ 
+    socket.on("joined", (id: string) => {
+      call(id);
+    });
+ 
   useEffect(() => {
     if (!navigator.onLine) {
-      ShowInfo("You need to be online to open camera and connect", "Info");
+      ShowInfo("You need to be online to open camera and connect", "Info: Needs Internet");
     }
+    socket.on("user-disconnected", (id: string) => {
+      document.getElementById(id)?.remove();
+    });
     socket.on("data", (data, from) => {
       //todo /// thinking of not implementing this feature and turning it to chat box, pics may work tho
       setChats((prev) => [...prev, data]);
       setMe((prev) => [...prev, false]);
       setSenders((prev) => [...prev, from]);
     });
-    socket.on("muted", (id) =>{
-      if(document.getElementById(id)){
+    socket.on("muted", (id) => {
+      if (document.getElementById(id)) {
         let vid = document.getElementById(id) as HTMLVideoElement;
-        vid.muted = !vid.muted
+        vid.muted = !vid.muted;
       }
+    });
+    socket.on("updateP", (p)=>{
+      setConns(p.map((t:any) => t.uname))
     })
     async function loadUser() {
       let person = await GetUser();
@@ -77,8 +90,8 @@ function App() {
       container.scrollTop = container.scrollHeight;
     }
   }, [chats, me]);
-  function joinRoom(roomId: string, userId: string) {
-    socket.emit("join-room", roomId, userId);
+  function joinRoom(roomId: string, userId: string, uname: string) {
+    socket.emit("join-room", roomId, userId, uname);
   }
   async function Open() {
     let file = await OpenFile();
@@ -137,11 +150,11 @@ function App() {
     }
     setFile(file);
   }
-  async function printJson(n: string) {
-    let data = await Read(n);
-    let jsson = await GetString(data);
-    return jsson;
-  }
+  // async function printJson(n: string) {
+  //   let data = await Read(n);
+  //   let jsson = await GetString(data);
+  //   return jsson;
+  // }
   peer.on("open", (id) => {
     setId(id);
   });
@@ -176,6 +189,7 @@ function App() {
       video.addEventListener("dblclick", () => {
         video.requestFullscreen();
       });
+      //if (uname) setConnIds((prev) => [...prev, uname]);
       streams.appendChild(video);
     }
   }
@@ -281,42 +295,58 @@ function App() {
               <button
                 className="p-2 bg-[#3C3D37]"
                 onClick={() => {
-                  joinRoom(remoteId, id);
+                  joinRoom(remoteId, id, person.username);
                 }}
               >
                 Join Room
               </button>
             </div>
           )}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col items-center gap-4">
             <div
               className="flex gap-2 items-center justify-center max-w-[25rem] overflow-auto"
               id="streams"
             >
-              <div className="flex flex-col items-center gap-2">
-                <video
-                  autoPlay
-                  controls={false}
-                  playsInline
-                  id="userCam"
-                  className="max-h-44 max-w-44"
-                  muted
-                  onDoubleClick={(e) => {
-                    e.currentTarget.requestFullscreen();
-                  }}
-                />
-                {camStream && <div className="flex gap-1">
-                   <Mute mute={()=>{
-                    socket.emit("mute", peer.id)
-                   }} /> <OffCam off={()=>{
-                    socket.emit("off", peer.id)
-                   }} />
-                </div>}
-              </div>
+              <video
+                autoPlay
+                controls={false}
+                playsInline
+                id="userCam"
+                className="max-h-44 max-w-44"
+                muted
+                onDoubleClick={(e) => {
+                  e.currentTarget.requestFullscreen();
+                }}
+              />
             </div>
+            {camStream && (
+              <div className="flex-col flex gap-3 items-center">
+                <div className="flex gap-1 items-center">
+                  <Mute
+                    mute={() => {
+                      socket.emit("mute", peer.id);
+                      setMuted(!muted)
+                    }}
+                    muted={muted}
+                  />{" "}
+                  <OffCam
+                    off={() => {
+                      socket.emit("off", peer.id);
+                      setOffed(!offed)
+                    }}
+                    offed={offed}
+                  />
+                </div>
+                <div className="flex flex-col items-center gap-1 cursor-pointer" onClick={()=> setShowChat(!showChat)}>
+                  <ChatIcon />
+                  <p>{showChat && "Close chat"}{!showChat && "Open Chat"}</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
-        <div className="p-4 flex flex-col grow gap-2">
+        {showChat && (
+          <div className="p-4 flex flex-col grow gap-2">
           <h2 className="text-2xl"> Chat Box</h2>
           <ChatView
             chats={chats}
@@ -348,6 +378,7 @@ function App() {
             }}
           />
         </div>
+        )}
         {media && (
           <div className="p-4 flex flex-col grow gap-2">
             <h2 className="text-2xl">Media Display</h2>
