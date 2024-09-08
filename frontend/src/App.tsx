@@ -28,6 +28,7 @@ function App() {
   //I didn't know this would escalate into something so large
   //I repeat never write code as ugly as this.
   const [camStream, setCamStream] = useState<MediaStream | null>();
+  const [screenStream, setScreenStream] = useState<MediaStream | null>();
   const [id, setId] = useState("");
   const [audio, setAudio] = useState(false);
   const [file, setFile] = useState("");
@@ -38,23 +39,24 @@ function App() {
   const [chat, setChat] = useState("");
   const [me, setMe] = useState<Array<boolean>>([]);
   const [media, setMedia] = useState(false);
-  const [conns, setConns] = useState<Array<string>>([]);
+  const [conns, setConns] = useState<Array<Particpant>>([]);
   const [join, setJoin] = useState(false);
   const [person, setPerson] = useState<any>();
   const [senders, setSenders] = useState<Array<string>>([]);
   const [muted, setMuted] = useState(false);
   const [offed, setOffed] = useState(false);
-  const [showChat, setShowChat] = useState(false)
+  const [showChat, setShowChat] = useState(false);
   const cam: HTMLVideoElement = document.getElementById(
     "userCam"
   ) as HTMLVideoElement;
   const streams = document.getElementById("streams") as HTMLDivElement;
-  
- 
- 
+
   useEffect(() => {
     if (!navigator.onLine) {
-      ShowInfo("You need to be online to open camera and connect", "Info: Needs Internet");
+      ShowInfo(
+        "You need to be online to open camera and connect",
+        "Info: Needs Internet"
+      );
     }
     socket.on("user-disconnected", (id: string) => {
       document.getElementById(id)?.remove();
@@ -65,15 +67,26 @@ function App() {
       setMe((prev) => [...prev, false]);
       setSenders((prev) => [...prev, from]);
     });
-    socket.on("muted", (id) => {
+    socket.on("muted", (id, val) => {
       if (document.getElementById(id)) {
         let vid = document.getElementById(id) as HTMLVideoElement;
-        vid.muted = !vid.muted;
+        vid.muted = val;
       }
     });
-    socket.on("updateP", (p)=>{
-      setConns(p.map((t:any) => t.uname))
-    })
+    socket.on("updateP", (p) => {
+      if (conns.some((part) => part.userId === p.userId)) {
+        let val = conns.map((v) => {
+          if (v.userId === p.userId) {
+            v.muted = p.muted;
+            v.offed = p.offed;
+          }
+          return v;
+        });
+        setConns(val)
+      }else{
+        setConns(prev => [...prev, p])
+      }
+    });
     async function loadUser() {
       let person = await GetUser();
       person.length > 4 && setPerson(JSON.parse(person));
@@ -82,13 +95,17 @@ function App() {
   }, []);
 
   useEffect(() => {
+    alert(JSON.stringify(conns));
+  }, [conns]);
+
+  useEffect(() => {
     let container = document.getElementById("chats");
     if (container) {
       container.scrollTop = container.scrollHeight;
     }
   }, [chats, me]);
   function joinRoom(roomId: string, userId: string, uname: string) {
-    socket.emit("join-room", roomId, userId, uname);
+    socket.emit("join-room", roomId, userId, uname, muted, offed);
     socket.on("joined", (id: string) => {
       call(id);
     });
@@ -150,11 +167,6 @@ function App() {
     }
     setFile(file);
   }
-  // async function printJson(n: string) {
-  //   let data = await Read(n);
-  //   let jsson = await GetString(data);
-  //   return jsson;
-  // }
   peer.on("open", (id) => {
     setId(id);
   });
@@ -254,8 +266,8 @@ function App() {
     const media = await navigator.mediaDevices.getDisplayMedia({
       video: true,
     });
-    //setScreenStream(media);
-    cam.srcObject = media;
+    setScreenStream(media);
+    //cam.srcObject = media;
   }
   return (
     <div className="bg-[#1E201E] text-[#ECDFCC] min-h-screen overflow-auto flex flex-col items-center gap-4 justify-evenly">
@@ -324,22 +336,28 @@ function App() {
                 <div className="flex gap-1 items-center">
                   <Mute
                     mute={() => {
-                      socket.emit("mute", peer.id);
-                      setMuted(!muted)
+                      socket.emit("mute", peer.id, !muted);
+                      setMuted(!muted);
                     }}
                     muted={muted}
                   />{" "}
                   <OffCam
                     off={() => {
                       socket.emit("off", peer.id);
-                      setOffed(!offed)
+                      setOffed(!offed);
                     }}
                     offed={offed}
                   />
                 </div>
-                <div className="flex flex-col items-center gap-1 cursor-pointer" onClick={()=> setShowChat(!showChat)}>
+                <div
+                  className="flex flex-col items-center gap-1 cursor-pointer"
+                  onClick={() => setShowChat(!showChat)}
+                >
                   <ChatIcon />
-                  <p>{showChat && "Close chat"}{!showChat && "Open Chat"}</p>
+                  <p>
+                    {showChat && "Close chat"}
+                    {!showChat && "Open Chat"}
+                  </p>
                 </div>
               </div>
             )}
@@ -347,37 +365,37 @@ function App() {
         </div>
         {showChat && (
           <div className="p-4 flex flex-col grow gap-2">
-          <h2 className="text-2xl"> Chat Box</h2>
-          <ChatView
-            chats={chats}
-            me={me}
-            senders={senders}
-            input={(e) => {
-              setChat(e.target.value);
-            }}
-            send={() => {
-              socket.emit("chat", chat, person.username);
-              setChats((prev) => [...prev, chat]);
-              setMe((prev) => [...prev, true]);
-              setSenders((prev) => [...prev, person.username]);
-              if (document.getElementById("chat-input")) {
-                const input = document.getElementById(
-                  "chat-input"
-                ) as HTMLInputElement;
-                input.value = "";
-              }
-            }}
-            enterSend={(e) => {
-              if (e.key === "Enter") {
+            <h2 className="text-2xl"> Chat Box</h2>
+            <ChatView
+              chats={chats}
+              me={me}
+              senders={senders}
+              input={(e) => {
+                setChat(e.target.value);
+              }}
+              send={() => {
                 socket.emit("chat", chat, person.username);
-                e.currentTarget.value = "";
                 setChats((prev) => [...prev, chat]);
                 setMe((prev) => [...prev, true]);
                 setSenders((prev) => [...prev, person.username]);
-              }
-            }}
-          />
-        </div>
+                if (document.getElementById("chat-input")) {
+                  const input = document.getElementById(
+                    "chat-input"
+                  ) as HTMLInputElement;
+                  input.value = "";
+                }
+              }}
+              enterSend={(e) => {
+                if (e.key === "Enter") {
+                  socket.emit("chat", chat, person.username);
+                  e.currentTarget.value = "";
+                  setChats((prev) => [...prev, chat]);
+                  setMe((prev) => [...prev, true]);
+                  setSenders((prev) => [...prev, person.username]);
+                }
+              }}
+            />
+          </div>
         )}
         {media && (
           <div className="p-4 flex flex-col grow gap-2">
@@ -399,5 +417,10 @@ function App() {
     </div>
   );
 }
-
+interface Particpant {
+  userId: string;
+  uname: string;
+  muted: boolean;
+  offed: boolean;
+}
 export default App;
