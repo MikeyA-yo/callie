@@ -2,6 +2,7 @@ package main
 
 import (
 	gofs "callie/goFs"
+	"callie/schedule"
 	"context"
 	"fmt"
 	"io/fs"
@@ -60,6 +61,9 @@ func (a *App) Write(dest string, data []byte) {
 
 func (a *App) Read(name string) []byte {
 	return gofs.ReadFile(name)
+}
+func (a *App) ConnectMongo() {
+	schedule.Connect(os.Getenv("MONGO_URI"))
 }
 
 type Info struct {

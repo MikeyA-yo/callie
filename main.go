@@ -19,6 +19,7 @@ func main() {
 	if e != nil {
 		println("Error:", e.Error())
 	}
+	//Uri := os.Getenv("MONGO_URI")
 	// Create application with options
 	err := wails.Run(&options.App{
 		Title:  "Callie",
