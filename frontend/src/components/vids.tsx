@@ -29,6 +29,7 @@ export function VidDivs({
             return (
               <>
                 <SwiperSlide
+                className="w-full p-4"
                 >
                   <div
                     id={particpant.userId.substring(
