@@ -52,8 +52,8 @@ export function Mute({
   mute,
   muted
 }: {
-  mute: React.MouseEventHandler<SVGSVGElement>;
-  muted?:boolean
+  mute?: React.MouseEventHandler<SVGSVGElement>;
+  muted:boolean
 }) {
   let clString = muted ? "cursor-pointer" : "rounded-full p-2 bg-[#ECDFCC] text-[#697565] cursor-pointer"
   return (
@@ -68,8 +68,8 @@ export function OffCam({
   off,
   offed
 }: {
-  off: React.MouseEventHandler<SVGSVGElement>;
-  offed?:boolean
+  off?: React.MouseEventHandler<SVGSVGElement>;
+  offed:boolean
 }) {
   let clString = offed ? "cursor-pointer" : "rounded-full p-2 bg-[#ECDFCC] text-[#697565] cursor-pointer"
   return (

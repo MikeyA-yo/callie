@@ -15,6 +15,7 @@ import MediaView from "./components/media";
 import ChatView, { ChatIcon } from "./components/chats";
 import Starters, { Mute, OffCam } from "./components/starters";
 import { UserIntro } from "./components/userinfo";
+import { VidDivs } from "./components/vids";
 // const peer = new RTCPeerConnection( {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
 
 export const peer = new Peer();
@@ -58,8 +59,9 @@ function App() {
         "Info: Needs Internet"
       );
     }
-    socket.on("user-disconnected", (id: string) => {
-      document.getElementById(id)?.remove();
+    socket.on("user-disconnected", (id: string, p) => {
+       setConns(p)
+      // document.getElementById(id)?.remove();
     });
     socket.on("data", (data, from) => {
       //todo /// thinking of not implementing this feature and turning it to chat box, pics may work tho
@@ -74,18 +76,7 @@ function App() {
       }
     });
     socket.on("updateP", (p) => {
-      if (conns.some((part) => part.userId === p.userId)) {
-        let val = conns.map((v) => {
-          if (v.userId === p.userId) {
-            v.muted = p.muted;
-            v.offed = p.offed;
-          }
-          return v;
-        });
-        setConns(val)
-      }else{
-        setConns(prev => [...prev, p])
-      }
+      setConns(p)
     });
     async function loadUser() {
       let person = await GetUser();
@@ -93,10 +84,6 @@ function App() {
     }
     loadUser();
   }, []);
-
-  useEffect(() => {
-    alert(JSON.stringify(conns));
-  }, [conns]);
 
   useEffect(() => {
     let container = document.getElementById("chats");
@@ -201,8 +188,9 @@ function App() {
       video.addEventListener("dblclick", () => {
         video.requestFullscreen();
       });
-      //if (uname) setConnIds((prev) => [...prev, uname]);
-      streams.appendChild(video);
+      let parent = document.getElementById(id.substring(0, id.indexOf("-")));
+      parent?.insertBefore(video, parent.firstChild)
+      //streams.appendChild(video);
     }
   }
   useEffect(() => {
@@ -330,6 +318,7 @@ function App() {
                   e.currentTarget.requestFullscreen();
                 }}
               />
+              <VidDivs participants={conns} id={id} />
             </div>
             {camStream && (
               <div className="flex-col flex gap-3 items-center">
@@ -417,7 +406,7 @@ function App() {
     </div>
   );
 }
-interface Particpant {
+export interface Particpant {
   userId: string;
   uname: string;
   muted: boolean;
