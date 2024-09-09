@@ -189,7 +189,7 @@ function App() {
         video.requestFullscreen();
       });
       let parent = document.getElementById(id.substring(0, id.indexOf("-")));
-      parent?.insertBefore(video, parent.firstChild)
+      parent?.insertBefore(video, parent.lastChild)
       //streams.appendChild(video);
     }
   }
@@ -303,10 +303,8 @@ function App() {
             </div>
           )}
           <div className="flex flex-col items-center gap-4">
-            <div
-              className="flex gap-2 items-center justify-center max-w-[25rem] overflow-auto"
-              id="streams"
-            >
+            <div className="flex flex-col items-center gap-2">
+              {camStream && <p>You</p>}
               <video
                 autoPlay
                 controls={false}
@@ -318,9 +316,7 @@ function App() {
                   e.currentTarget.requestFullscreen();
                 }}
               />
-              <VidDivs participants={conns} id={id} />
-            </div>
-            {camStream && (
+              {camStream && (
               <div className="flex-col flex gap-3 items-center">
                 <div className="flex gap-1 items-center">
                   <Mute
@@ -350,6 +346,13 @@ function App() {
                 </div>
               </div>
             )}
+            </div>
+            <div
+              className="flex gap-2 items-center justify-center max-w-[25rem] overflow-auto"
+              id="streams"
+            >
+              <VidDivs participants={conns} id={id} />
+            </div>
           </div>
         </div>
         {showChat && (
