@@ -47,6 +47,8 @@ function App() {
   const [muted, setMuted] = useState(false);
   const [offed, setOffed] = useState(false);
   const [showChat, setShowChat] = useState(false);
+  // const [peers, setPeers] = useState<any>({})
+  const peers:any = {}
   const cam: HTMLVideoElement = document.getElementById(
     "userCam"
   ) as HTMLVideoElement;
@@ -60,8 +62,8 @@ function App() {
       );
     }
     socket.on("user-disconnected", (id: string, p) => {
+       peers[id] && peers[id].close();
        setConns(p)
-      // document.getElementById(id)?.remove();
     });
     socket.on("data", (data, from) => {
       //todo /// thinking of not implementing this feature and turning it to chat box, pics may work tho
@@ -171,6 +173,7 @@ function App() {
       conn.on("stream", (stream) => {
         addUser(stream, id);
       });
+      peers[id] = conn;
     }
   }
 
@@ -264,6 +267,7 @@ function App() {
       </div>
       <UserIntro />
       <Starters
+        jState={join}
         close={() => {
           if (!camStream) {
             loadCam();
