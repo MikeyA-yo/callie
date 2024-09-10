@@ -20,6 +20,13 @@ func Connect(uri string) *mongo.Client {
 	return client
 }
 
-func Query(client *mongo.Client, t string) {
+type Qhandler struct {
+	ctx context.Context
+}
 
+func NewQhandler() *Qhandler {
+	return &Qhandler{}
+}
+func (q *Qhandler) Query(client *mongo.Client, t string) {
+	q.ctx = context.TODO()
 }
