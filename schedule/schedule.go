@@ -52,3 +52,11 @@ func (q *Qhandler) Find(filter, value string) RoomDoc {
 
 	return result
 }
+
+func (q *Qhandler) Insert(value interface{}) *mongo.InsertOneResult {
+	res, e := q.client.Database("callie").Collection("rooms").InsertOne(q.ctx, value)
+	if e != nil {
+		panic(e)
+	}
+	return res
+}
