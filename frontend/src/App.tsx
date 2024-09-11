@@ -16,6 +16,7 @@ import ChatView, { ChatIcon } from "./components/chats";
 import Starters, { Mute, OffCam } from "./components/starters";
 import { UserIntro } from "./components/userinfo";
 import { VidDivs } from "./components/vids";
+import { ChatPopUp, SelfCam } from "./components/pops";
 // const peer = new RTCPeerConnection( {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
 
 export const peer = new Peer();
@@ -47,8 +48,8 @@ function App() {
   const [muted, setMuted] = useState(false);
   const [offed, setOffed] = useState(false);
   const [showChat, setShowChat] = useState(false);
-  // const [peers, setPeers] = useState<any>({})
-  const peers:any = {}
+  const [pop, setPop] = useState(false)
+  const peers: any = {};
   const cam: HTMLVideoElement = document.getElementById(
     "userCam"
   ) as HTMLVideoElement;
@@ -62,14 +63,18 @@ function App() {
       );
     }
     socket.on("user-disconnected", (id: string, p) => {
-       peers[id] && peers[id].close();
-       setConns(p)
+      peers[id] && peers[id].close();
+      setConns(p);
     });
     socket.on("data", (data, from) => {
       //todo /// thinking of not implementing this feature and turning it to chat box, pics may work tho
       setChats((prev) => [...prev, data]);
       setMe((prev) => [...prev, false]);
       setSenders((prev) => [...prev, from]);
+      setPop(true)
+      setTimeout(()=>{
+        setPop(false)
+      }, 3000)
     });
     socket.on("muted", (id, val) => {
       if (document.getElementById(id)) {
@@ -78,7 +83,7 @@ function App() {
       }
     });
     socket.on("updateP", (p) => {
-      setConns(p)
+      setConns(p);
     });
     async function loadUser() {
       let person = await GetUser();
@@ -192,7 +197,7 @@ function App() {
         video.requestFullscreen();
       });
       let parent = document.getElementById(id.substring(0, id.indexOf("-")));
-      parent?.insertBefore(video, parent.lastChild)
+      parent?.insertBefore(video, parent.lastChild);
       //streams.appendChild(video);
     }
   }
@@ -307,50 +312,53 @@ function App() {
             </div>
           )}
           <div className="flex flex-col items-center gap-4">
-            <div className="flex flex-col items-center gap-2">
-              {camStream && <p>You</p>}
-              <video
-                autoPlay
-                controls={false}
-                playsInline
-                id="userCam"
-                className="max-h-44 max-w-44"
-                muted
-                onDoubleClick={(e) => {
-                  e.currentTarget.requestFullscreen();
-                }}
-              />
-              {camStream && (
-              <div className="flex-col flex gap-3 items-center">
-                <div className="flex gap-1 items-center">
-                  <Mute
-                    mute={() => {
-                      socket.emit("mute", peer.id, !muted);
-                      setMuted(!muted);
-                    }}
-                    muted={muted}
-                  />{" "}
-                  <OffCam
-                    off={() => {
-                      socket.emit("off", peer.id);
-                      setOffed(!offed);
-                    }}
-                    offed={offed}
-                  />
-                </div>
-                <div
-                  className="flex flex-col items-center gap-1 cursor-pointer"
-                  onClick={() => setShowChat(!showChat)}
-                >
-                  <ChatIcon />
-                  <p>
-                    {showChat && "Close chat"}
-                    {!showChat && "Open Chat"}
-                  </p>
-                </div>
+            {pop && <ChatPopUp from={senders[senders.length - 1]} message={chats[chats.length - 1]} />}
+            <SelfCam>
+              <div className="flex flex-col items-center gap-2">
+                {camStream && <p>You</p>}
+                <video
+                  autoPlay
+                  controls={false}
+                  playsInline
+                  id="userCam"
+                  className="max-h-44 max-w-44 rounded"
+                  muted
+                  onDoubleClick={(e) => {
+                    e.currentTarget.requestFullscreen();
+                  }}
+                />
+                {camStream && (
+                  <div className="flex-col flex gap-3 items-center">
+                    <div className="flex gap-1 items-center">
+                      <Mute
+                        mute={() => {
+                          socket.emit("mute", peer.id, !muted);
+                          setMuted(!muted);
+                        }}
+                        muted={muted}
+                      />{" "}
+                      <OffCam
+                        off={() => {
+                          socket.emit("off", peer.id);
+                          setOffed(!offed);
+                        }}
+                        offed={offed}
+                      />
+                    </div>
+                    <div
+                      className="flex flex-col items-center gap-1 cursor-pointer"
+                      onClick={() => setShowChat(!showChat)}
+                    >
+                      <ChatIcon />
+                      <p>
+                        {showChat && "Close chat"}
+                        {!showChat && "Open Chat"}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-            </div>
+            </SelfCam>
             <div
               className="flex gap-2 items-center justify-center max-w-[25rem] overflow-auto"
               id="streams"

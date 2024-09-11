@@ -13,12 +13,6 @@ func Connect(uri string) *mongo.Client {
 	if err != nil {
 		panic(err)
 	}
-	//To use it in disconnect function
-	// defer func() {
-	// 	if err := client.Disconnect(context.TODO()); err != nil {
-	// 		panic(err)
-	// 	}
-	// }()
 	return client
 }
 
@@ -29,6 +23,11 @@ type Qhandler struct {
 
 func NewQhandler(uri string) *Qhandler {
 	return &Qhandler{client: Connect(uri), ctx: context.TODO()}
+}
+func (q *Qhandler) Disconnect() {
+	if err := q.client.Disconnect(q.ctx); err != nil {
+		panic(err)
+	}
 }
 func (q *Qhandler) Query(client *mongo.Client, t string, coll string) {
 
