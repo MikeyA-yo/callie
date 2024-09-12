@@ -71,7 +71,7 @@ func (q *Qhandler) Delete(filter, value string) *mongo.DeleteResult {
 func Schedule(expiry int, owner, roomid, uri string) bool {
 	queryHandler := NewQhandler(uri)
 	defer queryHandler.Disconnect()
-	result := queryHandler.Find("owner", owner)
+	result := queryHandler.Find("roomId", roomid)
 	if len(result.RoomId) == 0 {
 		queryHandler.Insert(RoomDoc{RoomId: roomid, Owner: owner, ExpiryDate: expiry})
 		return true
@@ -88,6 +88,7 @@ func Schedulev2(expiry int, owner, roomid, uri string) bool {
 		if e == mongo.ErrClientDisconnected {
 			panic(e)
 		}
+		return false
 	}
 	defer func() {
 		if err := client.Disconnect(context.TODO()); err != nil {
