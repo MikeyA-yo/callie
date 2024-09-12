@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Schedule, Schedule2 } from "../../wailsjs/go/main/App"
-import { Spinner, Tick } from "./svgs";
+import { Spinner, Tick, XMark } from "./svgs";
 
 export function ChatPopUp({message, from}:{from:string, message:string}){
   return (
@@ -27,12 +27,16 @@ export function SchedulePop({cancel, uname}:{cancel?:React.MouseEventHandler<HTM
   const [data, setData] = useState({id:"",exp:0});
   const [load, setLoad] = useState(false);
   const [a, b] = useState(false);
+  const [c, d] = useState(false)
   
   async function schedule(data:{id:string, exp:number}){
     setLoad(true)
     let val = await Schedule(data.exp, uname, data.id);
     setLoad(false)
     alert(val)
+    if (val === false){
+      d(true)
+    }
     b(val)
   }
   function handleInput(e:React.ChangeEvent<HTMLInputElement>){
@@ -48,6 +52,7 @@ export function SchedulePop({cancel, uname}:{cancel?:React.MouseEventHandler<HTM
      <div className="fixed top-1/2 z-20 bg-[#697565] transform -translate-x-1/2 -translate-y-1/2 left-1/2">
         <div className="flex flex-col p-4 gap-2">
           {a && <Success />}
+          {c && <E />}
            <h3 className="text-xl">Schedule a new meeting</h3>
            <div className="flex flex-col gap-2">
             <p>Enter Desired ID:</p>
@@ -79,5 +84,13 @@ function Success(){
        Schedule Created <Tick className="size-6 border-[#697565] rounded border p-1"/>
      </div>
     </>
+  )
+}
+function E(){
+  return (
+    <>
+   <div className="bg-red-500 flex gap-2 items-center justify-around p-3">
+       Schedule failed to create, this ID already exists or network issues <XMark className="size-6 border-[#697565] rounded border p-1"/>
+     </div> </>
   )
 }
