@@ -60,7 +60,9 @@ func (a *App) Read(name string) []byte {
 func (a *App) Schedule(exp int, owner, id string) bool {
 	return schedule.Schedule(exp, owner, id, a.dburl)
 }
-
+func (a *App) Schedule2(exp int, owner, id string) bool {
+	return schedule.Schedulev2(exp, owner, id, a.dburl)
+}
 func (a *App) DeleteSch(id string) {
 	schedule.DeleteSchedule(id, a.dburl)
 }

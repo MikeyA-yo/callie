@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Schedule } from "../../wailsjs/go/main/App"
+import { Schedule, Schedule2 } from "../../wailsjs/go/main/App"
 import { Spinner, Tick } from "./svgs";
 
 export function ChatPopUp({message, from}:{from:string, message:string}){
@@ -30,7 +30,7 @@ export function SchedulePop({cancel, uname}:{cancel?:React.MouseEventHandler<HTM
   
   async function schedule(data:{id:string, exp:number}){
     setLoad(true)
-    let val = await Schedule(data.exp, uname, data.id);
+    let val = await Schedule2(data.exp, uname, data.id);
     setLoad(false)
     alert(val)
     b(val)

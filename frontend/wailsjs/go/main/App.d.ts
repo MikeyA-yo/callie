@@ -20,6 +20,8 @@ export function Read(arg1:string):Promise<Array<number>>;
 
 export function Schedule(arg1:number,arg2:string,arg3:string):Promise<boolean>;
 
+export function Schedule2(arg1:number,arg2:string,arg3:string):Promise<boolean>;
+
 export function ShowInfo(arg1:string,arg2:string):Promise<string>;
 
 export function Stats(arg1:string):Promise<main.Info>;

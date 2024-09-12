@@ -78,6 +78,24 @@ func Schedule(expiry int, owner, roomid, uri string) bool {
 	}
 	return false
 }
+func Schedulev2(expiry int, owner, roomid, uri string) bool {
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI((uri)))
+	if err != nil {
+		panic(err)
+	}
+	_, e := client.Database("callie").Collection("rooms").InsertOne(context.TODO(), RoomDoc{RoomId: roomid, Owner: owner, ExpiryDate: expiry})
+	if e != nil {
+		if e == mongo.ErrClientDisconnected {
+			panic(e)
+		}
+	}
+	defer func() {
+		if err := client.Disconnect(context.TODO()); err != nil {
+			panic(err)
+		}
+	}()
+	return true
+}
 func DeleteSchedule(roomid, uri string) {
 	queryHandler := NewQhandler(uri)
 	defer queryHandler.Disconnect()

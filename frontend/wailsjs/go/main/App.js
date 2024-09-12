@@ -38,6 +38,10 @@ export function Schedule(arg1, arg2, arg3) {
   return window['go']['main']['App']['Schedule'](arg1, arg2, arg3);
 }
 
+export function Schedule2(arg1, arg2, arg3) {
+  return window['go']['main']['App']['Schedule2'](arg1, arg2, arg3);
+}
+
 export function ShowInfo(arg1, arg2) {
   return window['go']['main']['App']['ShowInfo'](arg1, arg2);
 }
