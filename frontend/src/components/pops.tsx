@@ -32,6 +32,7 @@ export function SchedulePop({cancel, uname}:{cancel?:React.MouseEventHandler<HTM
     setLoad(true)
     let val = await Schedule(data.exp, uname, data.id);
     setLoad(false)
+    alert(val)
     b(val)
   }
   function handleInput(e:React.ChangeEvent<HTMLInputElement>){
@@ -62,7 +63,7 @@ export function SchedulePop({cancel, uname}:{cancel?:React.MouseEventHandler<HTM
             }} type="datetime-local" min={new Date().toISOString()} />
             <button onClick={()=>{
               schedule(data)
-            }} className="flex p-2 bg-[#3C3D37]">Schedule {load && <Spinner className="animate-spin size-6" />}</button>
+            }} className="flex gap-2 justify-between p-2 bg-[#3C3D37]">Schedule {load && <Spinner className="animate-spin size-6" />}</button>
             <button onClick={cancel} className="flex p-2 bg-[#3C3D37]">Cancel</button>
            </div>
         </div>
