@@ -32,9 +32,7 @@ func NewApp() *App {
 	return &App{}
 }
 
-// func DB() {
-// 	mongo.Connect(options.Client().ApplyURI(""))
-// }
+var mongoUri = os.Getenv("MONGO_URI")
 
 // startup is called when the app starts. The context is saved
 // so we can call the runtime methods
@@ -63,7 +61,11 @@ func (a *App) Read(name string) []byte {
 	return gofs.ReadFile(name)
 }
 func (a *App) Schedule(exp int, owner, id string) bool {
-	return schedule.Schedule(exp, owner, id, os.Getenv("MONGO_URI"))
+	return schedule.Schedule(exp, owner, id, mongoUri)
+}
+
+func (a *App) DeleteSch(id string) {
+	schedule.DeleteSchedule(id, mongoUri)
 }
 
 type Info struct {
