@@ -62,8 +62,8 @@ func (a *App) Write(dest string, data []byte) {
 func (a *App) Read(name string) []byte {
 	return gofs.ReadFile(name)
 }
-func (a *App) ConnectMongo() {
-	schedule.Connect(os.Getenv("MONGO_URI"))
+func (a *App) Schedule(exp int, owner, id string) bool {
+	return schedule.Schedule(exp, owner, id, os.Getenv("MONGO_URI"))
 }
 
 type Info struct {

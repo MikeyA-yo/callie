@@ -29,13 +29,6 @@ func (q *Qhandler) Disconnect() {
 		panic(err)
 	}
 }
-func (q *Qhandler) Query(client *mongo.Client, t string, coll string) {
-
-	collection := client.Database("callie").Collection(coll)
-	if t == "find" {
-		collection.FindOne(q.ctx, bson.D{{Key: "roomId", Value: "n"}})
-	}
-}
 
 type RoomDoc struct {
 	RoomId     string `bson:"roomId"`
@@ -47,8 +40,14 @@ func (q *Qhandler) Find(filter, value string) RoomDoc {
 	var result RoomDoc
 	client := q.client
 	findRes := client.Database("callie").Collection("rooms").FindOne(q.ctx, bson.D{{Key: filter, Value: value}})
-	findRes.Decode(&result)
-
+	e := findRes.Decode(&result)
+	if e != nil {
+		if e == mongo.ErrNoDocuments {
+			return RoomDoc{RoomId: "", ExpiryDate: 0, Owner: ""}
+		} else {
+			panic(e)
+		}
+	}
 	return result
 }
 
@@ -58,4 +57,29 @@ func (q *Qhandler) Insert(value interface{}) *mongo.InsertOneResult {
 		panic(e)
 	}
 	return res
+}
+
+func (q *Qhandler) Delete(filter, value string) *mongo.DeleteResult {
+	res, e := q.client.Database("callie").Collection("rooms").DeleteOne(q.ctx, bson.D{{Key: filter, Value: value}})
+	if e != nil {
+		panic(e)
+	}
+	return res
+}
+
+// returns true if room was successfully created else false, if the roomid already exists
+func Schedule(expiry int, owner, roomid, uri string) bool {
+	queryHandler := NewQhandler(uri)
+	defer queryHandler.Disconnect()
+	result := queryHandler.Find("owner", owner)
+	if len(result.RoomId) == 0 {
+		queryHandler.Insert(RoomDoc{RoomId: roomid, Owner: owner, ExpiryDate: expiry})
+		return true
+	}
+	return false
+}
+func DeleteSchedule(roomid, uri string) {
+	queryHandler := NewQhandler(uri)
+	defer queryHandler.Disconnect()
+	queryHandler.Delete("roomId", roomid)
 }
