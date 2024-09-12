@@ -12,13 +12,12 @@ import (
 	"strings"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
-	// "go.mongodb.org/mongo-driver/mongo"
-	// "go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // App struct
 type App struct {
-	ctx context.Context
+	ctx   context.Context
+	dburl string
 }
 
 // type User Struct
@@ -28,11 +27,9 @@ type User struct {
 }
 
 // NewApp creates a new App application struct
-func NewApp() *App {
-	return &App{}
+func NewApp(dburl string) *App {
+	return &App{dburl: dburl}
 }
-
-var mongoUri = os.Getenv("MONGO_URI")
 
 // startup is called when the app starts. The context is saved
 // so we can call the runtime methods
@@ -61,11 +58,11 @@ func (a *App) Read(name string) []byte {
 	return gofs.ReadFile(name)
 }
 func (a *App) Schedule(exp int, owner, id string) bool {
-	return schedule.Schedule(exp, owner, id, mongoUri)
+	return schedule.Schedule(exp, owner, id, a.dburl)
 }
 
 func (a *App) DeleteSch(id string) {
-	schedule.DeleteSchedule(id, mongoUri)
+	schedule.DeleteSchedule(id, a.dburl)
 }
 
 type Info struct {

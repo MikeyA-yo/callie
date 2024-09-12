@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"os"
 
 	"github.com/joho/godotenv"
 	"github.com/wailsapp/wails/v2"
@@ -13,13 +14,12 @@ import (
 var assets embed.FS
 
 func main() {
-	// Create an instance of the app structure
-	app := NewApp()
-	e := godotenv.Load()
+	e := godotenv.Load(".env")
 	if e != nil {
 		println("Error:", e.Error())
 	}
-	//Uri := os.Getenv("MONGO_URI")
+	// Create an instance of the app structure
+	app := NewApp(os.Getenv("MONGO_URI"))
 	// Create application with options
 	err := wails.Run(&options.App{
 		Title:  "Callie",

@@ -21,8 +21,8 @@ import { ChatPopUp, SchedulePop, SelfCam } from "./components/pops";
 
 export const peer = new Peer();
 const socket = io(
-  (import.meta.env.VITE_SOCK_URL as string) ??
-    "https://callie-rooms.zeabur.app/"
+   (import.meta.env.VITE_SOCK_URL as string) ??
+     "https://callie-rooms.onrender.com/"
 );
 
 function App() {
@@ -75,7 +75,7 @@ function App() {
       setPop(true)
       setTimeout(()=>{
         setPop(false)
-      }, 3000)
+      }, 6000)
     });
     socket.on("muted", (id, val) => {
       if (document.getElementById(id)) {
@@ -186,8 +186,6 @@ function App() {
   function addUser(stream: MediaStream, id: string) {
     const existing = document.getElementById(id);
     if (!existing) {
-      // const div = document.createElement("div");
-      // div.id = id.substring(0, id.indexOf("-"));
       const video = document.createElement("video");
       video.autoplay = true;
       video.controls = false;
@@ -199,7 +197,6 @@ function App() {
       });
       let parent = document.getElementById(id.substring(0, id.indexOf("-")));
       parent?.insertBefore(video, parent.lastChild);
-      //streams.appendChild(video);
     }
   }
   useEffect(() => {
@@ -293,7 +290,7 @@ function App() {
         text={camStream ? "Close Camera" : "Open Camera"}
       />
       <div className="flex gap-4 w-full items-center p-4 justify-evenly max-h-[80%] overflow-auto">
-        {sPop && <SchedulePop />}
+        {sPop && <SchedulePop cancel={()=> setSPop(false)} uname={person.name} />}
         <div className="flex flex-col grow gap-4 p-2">
           {join && (
             <div className="flex flex-col text-xl gap-2">
