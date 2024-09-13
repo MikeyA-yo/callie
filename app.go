@@ -106,6 +106,12 @@ func (a *App) GetUser() string {
 func (a *App) EditUser(d string) {
 	gofs.WriteUserData(d)
 }
+func (a *App) GetMeetings() []byte {
+	return gofs.GetMeetings()
+}
+func (a *App) AddMeeting(m string) {
+	gofs.AddMeeting(m)
+}
 
 type FileLoader struct {
 	http.Handler
