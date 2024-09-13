@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Schedule, Schedule2 } from "../../wailsjs/go/main/App"
+import { AddMeeting, Schedule, Schedule2 } from "../../wailsjs/go/main/App"
 import { Spinner, Tick, XMark } from "./svgs";
 
 export function ChatPopUp({message, from}:{from:string, message:string}){
@@ -33,9 +33,10 @@ export function SchedulePop({cancel, uname}:{cancel?:React.MouseEventHandler<HTM
     setLoad(true)
     let val = await Schedule(data.exp, uname, data.id);
     setLoad(false)
-    alert(val)
     if (val === false){
       d(true)
+    }else{
+      AddMeeting(JSON.stringify({roomId:data.id, expiryDate:data.exp}))
     }
     b(val)
   }
@@ -52,7 +53,7 @@ export function SchedulePop({cancel, uname}:{cancel?:React.MouseEventHandler<HTM
      <div className="fixed top-1/2 z-20 bg-[#697565] transform -translate-x-1/2 -translate-y-1/2 left-1/2">
         <div className="flex flex-col p-4 gap-2">
           {a && <Success />}
-          {c && <E />}
+          {c && !a && <E />}
            <h3 className="text-xl">Schedule a new meeting</h3>
            <div className="flex flex-col gap-2">
             <p>Enter Desired ID:</p>

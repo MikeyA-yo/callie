@@ -45,5 +45,6 @@ func GetMeetings() []byte {
 }
 func AddMeeting(m string) {
 	b := []byte(m)
+	os.Mkdir("meetings", 0750)
 	os.WriteFile("meetings/meetings.json", b, 0666)
 }
