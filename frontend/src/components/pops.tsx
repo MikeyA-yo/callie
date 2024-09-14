@@ -151,7 +151,7 @@ function E() {
   );
 }
 
-export function UpcomingPop() {
+export function UpcomingPop({cancel}:{cancel?: React.MouseEventHandler<HTMLButtonElement>;}) {
   const [meetings, setMeetings] = useState("");
   const [meetAr, setmeetAr] = useState<Array<any>>([]);
   useEffect(() => {
@@ -172,12 +172,15 @@ export function UpcomingPop() {
             meetAr.map((meet, i) => {
               return (
                 <>
-                {i+1}
-                  <div className="flex flex-col gap-2 justify-around">
-                    Meeting ID:
-                    <p>{meet.roomId}</p>
-                    Meeting Date and Time:
-                    <p>{new Date(meet.expiryDate).toUTCString()}</p>
+                  <div className="flex flex-col bg-[#3C3D37] p-2 rounded gap-2 justify-around">
+                    <div>
+                      
+                      <p>Meeting ID: {meet.roomId}</p>
+                    </div>
+                    <div>
+                      Meeting Date and Time:
+                      <p>{new Date(meet.expiryDate).toUTCString()}</p>
+                    </div>
                   </div>
                 </>
               );
@@ -186,6 +189,7 @@ export function UpcomingPop() {
         {meetAr.length === 0 && (
           <h1 className="text-2xl">No Upcoming Meetings Available</h1>
         )}
+        <button className="flex p-2 bg-[#3C3D37] mt-2 mx-auto" onClick={cancel}>Cancel</button>
       </div>
     </>
   );

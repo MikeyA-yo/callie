@@ -296,7 +296,7 @@ function App() {
       />
       <div className="flex gap-4 w-full items-center p-4 justify-evenly max-h-[80%] overflow-auto">
         {sPop && <SchedulePop cancel={()=> setSPop(false)} uname={person.name} />}
-          {uPop && <UpcomingPop />}
+        {uPop && <UpcomingPop cancel={()=> setUPop(false)} />}
         <div className="flex flex-col grow gap-4 p-2">
           {join && (
             <div className="flex flex-col text-xl gap-2">
