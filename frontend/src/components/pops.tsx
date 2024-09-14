@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { AddMeeting, Schedule, Schedule2 } from "../../wailsjs/go/main/App"
+import { useState, useEffect } from "react"
+import { AddMeeting, GetMeetings, Schedule, Schedule2 } from "../../wailsjs/go/main/App"
 import { Spinner, Tick, XMark } from "./svgs";
 
 export function ChatPopUp({message, from}:{from:string, message:string}){
@@ -27,8 +27,15 @@ export function SchedulePop({cancel, uname}:{cancel?:React.MouseEventHandler<HTM
   const [data, setData] = useState({id:"",exp:0});
   const [load, setLoad] = useState(false);
   const [a, b] = useState(false);
-  const [c, d] = useState(false)
-  
+  const [c, d] = useState(false);
+  const [e, f] = useState("")
+  // const [g, h] = useState<Array<any>>([])
+  useEffect(()=>{
+      (async function(){
+          let meetings = await GetMeetings();
+          f(meetings)
+      }())
+  },[])
   async function schedule(data:{id:string, exp:number}){
     setLoad(true)
     let val = await Schedule(data.exp, uname, data.id);
@@ -36,7 +43,17 @@ export function SchedulePop({cancel, uname}:{cancel?:React.MouseEventHandler<HTM
     if (val === false){
       d(true)
     }else{
-      AddMeeting(JSON.stringify({roomId:data.id, expiryDate:data.exp}))
+      if(e.includes("meetings")){
+        let meetingArray = JSON.parse(e).meetings;
+        meetingArray.push({roomId:data.id, expiryDate:data.exp})
+        let meetObj = {
+          meetings: meetingArray
+        }
+        AddMeeting(JSON.stringify(meetObj))
+      }else{
+         AddMeeting(JSON.stringify({meetings: [{roomId:data.id, expiryDate:data.exp}]}))
+      }
+     // AddMeeting(JSON.stringify(g.push({roomId:data.id, expiryDate:data.exp})))
     }
     b(val)
   }
@@ -94,4 +111,12 @@ function E(){
        Schedule failed to create, this ID already exists or network issues <XMark className="size-6 border-[#697565] rounded border p-1"/>
      </div> </>
   )
+}
+
+export function UpcomingPop(){
+  const [meetings, setMeetings] = useState("");
+  useEffect(()=>{
+
+  },[])
+
 }

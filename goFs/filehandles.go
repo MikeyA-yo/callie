@@ -38,10 +38,10 @@ func WriteUserData(d string) {
 	os.WriteFile("user/user.json", b, 0666)
 }
 
-func GetMeetings() []byte {
+func GetMeetings() string {
 	os.Mkdir("meetings", 0750)
 	b, _ := os.ReadFile("meetings/meetings.json")
-	return b
+	return ByteToJsons(b)
 }
 func AddMeeting(m string) {
 	b := []byte(m)

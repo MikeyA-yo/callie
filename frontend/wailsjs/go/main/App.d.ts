@@ -10,7 +10,7 @@ export function EditUser(arg1:string):Promise<void>;
 
 export function GetByte(arg1:string):Promise<Array<number>>;
 
-export function GetMeetings():Promise<Array<number>>;
+export function GetMeetings():Promise<string>;
 
 export function GetString(arg1:Array<number>):Promise<string>;
 

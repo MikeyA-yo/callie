@@ -106,7 +106,7 @@ func (a *App) GetUser() string {
 func (a *App) EditUser(d string) {
 	gofs.WriteUserData(d)
 }
-func (a *App) GetMeetings() []byte {
+func (a *App) GetMeetings() string {
 	return gofs.GetMeetings()
 }
 func (a *App) AddMeeting(m string) {
