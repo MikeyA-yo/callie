@@ -4,13 +4,15 @@ export default function Starters({
   close,
   text,
   media,
-  jState
+  jState,
+  upc
 }: {
   schedule: React.MouseEventHandler<HTMLDivElement>;
   join: React.MouseEventHandler<HTMLDivElement>;
   close: React.MouseEventHandler<HTMLDivElement>;
   text: string;
   media: React.MouseEventHandler<HTMLDivElement>;
+  upc:React.MouseEventHandler<HTMLDivElement>;
   jState:boolean
 }) {
   return (
@@ -48,7 +50,7 @@ export default function Starters({
           <MediaSvg />
           Toggle Media
         </div>
-        <div className="flex flex-col gap-2 items-center cursor-pointer">
+        <div className="flex flex-col gap-2 items-center cursor-pointer" onClick={upc}>
           <View className="size-12 fill-[#ECDFCC]"  />
           Upcoming Meetings
         </div>
