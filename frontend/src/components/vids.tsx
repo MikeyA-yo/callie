@@ -6,6 +6,7 @@ import {Navigation, Pagination} from "swiper/modules";
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import { Phone } from "./svgs";
 export function VidDivs({
   participants,
   id,
@@ -52,4 +53,14 @@ export function VidDivs({
       </Swiper>
     </>
   );
+}
+
+export function EndCall({end}:{end:React.MouseEventHandler<HTMLDivElement>}){
+  return (
+    <>
+      <div className="rounded-full p-2 cursor-pointer bg-[#800000]" onClick={end}>
+        <Phone className="size-6" />
+      </div>
+    </>
+  )
 }

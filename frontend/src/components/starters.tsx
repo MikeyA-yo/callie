@@ -4,7 +4,6 @@ export default function Starters({
   close,
   text,
   media,
-  jState,
   upc
 }: {
   schedule: React.MouseEventHandler<HTMLDivElement>;
@@ -13,7 +12,6 @@ export default function Starters({
   text: string;
   media: React.MouseEventHandler<HTMLDivElement>;
   upc:React.MouseEventHandler<HTMLDivElement>;
-  jState:boolean
 }) {
   return (
     <>
@@ -29,10 +27,8 @@ export default function Starters({
           className="flex flex-col gap-2 items-center cursor-pointer"
           onClick={join}
         >
-          {!jState && <JoinSvg />}
-          {!jState && "Join a Meeting"}
-          {/* {jState && <ExitSvg className="size-12 fill-[#ECDFCC]" />}
-          {jState && "Exit Meeting"} */}
+          <JoinSvg />
+          Join a Meeting
         </div>
         <div
           className={`flex flex-col gap-2 items-center cursor-pointer p-2 rounded ${

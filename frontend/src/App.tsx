@@ -15,7 +15,7 @@ import MediaView from "./components/media";
 import ChatView, { ChatIcon } from "./components/chats";
 import Starters, { Mute, OffCam } from "./components/starters";
 import { UserIntro } from "./components/userinfo";
-import { VidDivs } from "./components/vids";
+import { EndCall, VidDivs } from "./components/vids";
 import { ChatPopUp, SchedulePop, SelfCam, UpcomingPop } from "./components/pops";
 // const peer = new RTCPeerConnection( {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
 
@@ -271,7 +271,6 @@ function App() {
       </div>
       <UserIntro />
       <Starters
-        jState={join}
         close={() => {
           if (!camStream) {
             loadCam();
@@ -320,7 +319,7 @@ function App() {
             </div>
           )}
           <div className="flex flex-col items-center gap-4">
-            {pop && <ChatPopUp from={senders[senders.length - 1]} message={chats[chats.length - 1]} />}
+          {pop && <ChatPopUp from={senders[senders.length - 1]} message={chats[chats.length - 1]} />}
             <SelfCam>
               <div className="flex flex-col items-center gap-2">
                 {camStream && <p>You</p>}
@@ -373,6 +372,8 @@ function App() {
             >
               <VidDivs participants={conns} id={id} />
             </div>
+            {conns.length > 1 && <EndCall end={()=>{}} />}
+            {conns.length > 1 && "Leave Room"}  
           </div>
         </div>
         {showChat && (
