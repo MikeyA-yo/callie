@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import {
   AddMeeting,
+  DeleteSch,
   GetMeetings,
   Schedule,
   Schedule2,
@@ -151,36 +152,63 @@ function E() {
   );
 }
 
-export function UpcomingPop({cancel}:{cancel?: React.MouseEventHandler<HTMLButtonElement>;}) {
+export function UpcomingPop({
+  cancel,
+}: {
+  cancel?: React.MouseEventHandler<HTMLButtonElement>;
+}) {
   const [meetings, setMeetings] = useState("");
   const [meetAr, setmeetAr] = useState<Array<any>>([]);
+  const [load, setLoad] = useState(false);
   useEffect(() => {
     (async function () {
       const gM = await GetMeetings();
       setMeetings(gM);
       if (gM.length > 4) {
         setmeetAr(JSON.parse(gM).meetings);
+        JSON.parse(gM).meetings.map(((meeting:{roomId:string, expiryDate:number}) =>{
+          if(meeting.expiryDate < Date.now()){
+            deleteSch(meeting.roomId)
+          }
+        }))
       }
     })();
   }, []);
+  async function deleteSch(id: string) {
+    setLoad(true);
+    await DeleteSch(id);
+    setLoad(false);
+    let updatedArr = meetAr.filter((meet) => meet.roomId !== id);
+    setmeetAr((prev) => prev.filter((pre) => pre.roomId !== id));
+    AddMeeting(JSON.stringify({ meetings: updatedArr }));
+  }
   return (
     <>
       <div className="fixed top-1/2 z-20 p-4 bg-[#697565] transform -translate-x-1/2 -translate-y-1/2 left-1/2">
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col items-center gap-4">
           <h1 className="text-3xl"> Meetings:</h1>
+          {load && <Spinner className="animate-spin size-6" />}
           {meetAr.length > 0 &&
             meetAr.map((meet, i) => {
               return (
                 <>
                   <div className="flex flex-col bg-[#3C3D37] p-2 rounded gap-2 justify-around">
                     <div>
-                      
                       <p>Meeting ID: {meet.roomId}</p>
                     </div>
                     <div>
                       Meeting Date and Time:
                       <p>{new Date(meet.expiryDate).toUTCString()}</p>
                     </div>
+                    <button
+                      className="bg-[#697565]"
+                      disabled={load}
+                      onClick={() => {
+                        deleteSch(meet.roomId);
+                      }}
+                    >
+                      Delete 
+                    </button>
                   </div>
                 </>
               );
@@ -189,7 +217,9 @@ export function UpcomingPop({cancel}:{cancel?: React.MouseEventHandler<HTMLButto
         {meetAr.length === 0 && (
           <h1 className="text-2xl">No Upcoming Meetings Available</h1>
         )}
-        <button className="flex p-2 bg-[#3C3D37] mt-2 mx-auto" onClick={cancel}>Cancel</button>
+        <button className="flex p-2 bg-[#3C3D37] mt-2 mx-auto" onClick={cancel}>
+          Cancel
+        </button>
       </div>
     </>
   );

@@ -159,7 +159,6 @@ function App() {
         setMp4(false);
         setAudio(false);
         ShowInfo(fileType + " is not supported", "Invalid");
-        //printJson(file)
         break;
     }
     setFile(file);
@@ -288,9 +287,11 @@ function App() {
         }}
         schedule={() => {
           setSPop(true)
+          setUPop(false)
         }}
         upc={()=>{
           setUPop(true)
+          setSPop(false)
         }}
         text={camStream ? "Close Camera" : "Open Camera"}
       />

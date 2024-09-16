@@ -31,8 +31,8 @@ export default function Starters({
         >
           {!jState && <JoinSvg />}
           {!jState && "Join a Meeting"}
-          {jState && <ExitSvg className="size-12 fill-[#ECDFCC]" />}
-          {jState && "Exit Meeting"}
+          {/* {jState && <ExitSvg className="size-12 fill-[#ECDFCC]" />}
+          {jState && "Exit Meeting"} */}
         </div>
         <div
           className={`flex flex-col gap-2 items-center cursor-pointer p-2 rounded ${
