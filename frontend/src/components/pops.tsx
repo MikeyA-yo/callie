@@ -194,7 +194,7 @@ export function UpcomingPop({
                 <>
                   <div className="flex flex-col bg-[#3C3D37] p-2 rounded gap-2 justify-around">
                     <div>
-                      <p>Meeting ID: {meet.roomId}</p>
+                      <p>Meeting ID: <span className="font-bold">{meet.roomId}</span></p>
                     </div>
                     <div>
                       Meeting Date and Time:
