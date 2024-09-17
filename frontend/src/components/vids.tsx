@@ -6,7 +6,7 @@ import {Navigation, Pagination} from "swiper/modules";
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import { Phone } from "./svgs";
+import { Phone, UserAvatar } from "./svgs";
 export function VidDivs({
   participants,
   id,
@@ -26,8 +26,8 @@ export function VidDivs({
         navigation
         pagination
         >
-          {participants.map((particpant, i) => {
-            if (particpant.userId === id) {
+          {participants.map((participant, i) => {
+            if (participant.userId === id) {
               return <></>;
             } else {
               return (
@@ -36,16 +36,17 @@ export function VidDivs({
                   className="w-full p-4"
                   >
                     <div
-                      id={particpant.userId.substring(
+                      id={participant.userId.substring(
                         0,
-                        particpant.userId.indexOf("-")
+                        participant.userId.indexOf("-")
                       )}
                       className="flex flex-col gap-1 items-center"
                     >
-                      <p className="self-end">{particpant.uname}</p>
+                      <p className="self-end">{participant.uname}</p>
+                      <UserAvatar className="size-32 hidden" id={participant.userId.split("-")[participant.userId.length - 1]} />
                       <div className="flex gap-1 items-center">
-                        <Mute muted={particpant.muted} cursor={false} />
-                        <OffCam offed={particpant.offed} cursor={false} />
+                        <Mute muted={participant.muted} cursor={false} />
+                        <OffCam offed={participant.offed} cursor={false} />
                       </div>
                     </div>
                   </SwiperSlide>

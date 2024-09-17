@@ -84,6 +84,16 @@ function App() {
         vid.muted = val;
       }
     });
+    socket.on("offed", (id, val)=>{
+      if (document.getElementById(id)) {
+        let vid = document.getElementById(id) as HTMLVideoElement;
+        let svgE = document.getElementById(id.split("-")[id.length - 1]);
+        val && vid.classList.add("hidden");
+        val && svgE?.classList.remove("hidden")
+        !val && vid.classList.remove("hidden");
+        !val && svgE?.classList.add("hidden")
+      }
+    })
     socket.on("updateP", (p) => {
       setConns(p);
     });
@@ -359,7 +369,7 @@ function App() {
                       />{" "}
                       <OffCam
                         off={() => {
-                          socket.emit("off", peer.id);
+                          socket.emit("off", peer.id, !offed);
                           setOffed(!offed);
                         }}
                         cursor
