@@ -14,45 +14,49 @@ export function VidDivs({
   participants: Particpant[];
   id: string;
 }) {
-  return (
-    <>
-      <Swiper
-      spaceBetween={3}
-      slidesPerView={participants.length > 2 ? 2 : 1}
-      modules={[Navigation, Pagination]}
-      navigation
-      pagination
-      >
-        {participants.map((particpant, i) => {
-          if (particpant.userId === id) {
-            return <></>;
-          } else {
-            return (
-              <>
-                <SwiperSlide
-                className="w-full p-4"
-                >
-                  <div
-                    id={particpant.userId.substring(
-                      0,
-                      particpant.userId.indexOf("-")
-                    )}
-                    className="flex flex-col gap-1 items-center"
+  if(participants.length == 0){
+    return <></>
+  }else{
+    return (
+      <>
+        <Swiper
+        spaceBetween={3}
+        slidesPerView={participants.length > 2 ? 2 : 1}
+        modules={[Navigation, Pagination]}
+        navigation
+        pagination
+        >
+          {participants.map((particpant, i) => {
+            if (particpant.userId === id) {
+              return <></>;
+            } else {
+              return (
+                <>
+                  <SwiperSlide
+                  className="w-full p-4"
                   >
-                    <p className="self-end">{particpant.uname}</p>
-                    <div className="flex gap-1 items-center">
-                      <Mute muted={particpant.muted} />
-                      <OffCam offed={particpant.offed} />
+                    <div
+                      id={particpant.userId.substring(
+                        0,
+                        particpant.userId.indexOf("-")
+                      )}
+                      className="flex flex-col gap-1 items-center"
+                    >
+                      <p className="self-end">{particpant.uname}</p>
+                      <div className="flex gap-1 items-center">
+                        <Mute muted={particpant.muted} />
+                        <OffCam offed={particpant.offed} />
+                      </div>
                     </div>
-                  </div>
-                </SwiperSlide>
-              </>
-            );
-          }
-        })}
-      </Swiper>
-    </>
-  );
+                  </SwiperSlide>
+                </>
+              );
+            }
+          })}
+        </Swiper>
+      </>
+    );
+  }
 }
 
 export function EndCall({end}:{end:React.MouseEventHandler<HTMLDivElement>}){

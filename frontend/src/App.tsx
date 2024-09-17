@@ -9,7 +9,7 @@ import {
   GetString,
   GetUser,
 } from "../wailsjs/go/main/App";
-import Peer from "peerjs";
+import Peer, { DataConnection } from "peerjs";
 import { io } from "socket.io-client";
 import MediaView from "./components/media";
 import ChatView, { ChatIcon } from "./components/chats";
@@ -388,7 +388,17 @@ function App() {
               <VidDivs participants={conns} id={id} />
             </div>
             {conns.length > 1 && <EndCall end={()=>{
+              let dConns = Object.values(peers)
+              let ids = Object.keys(peers);
+              ids.forEach((id) =>{
+                 document.getElementById(id.slice(0, id.indexOf("-")))?.remove()
+              })
+              dConns.forEach((conn:any) =>{
+                conn.close()
+              })
+              setConns([])
               socket.emit("leave");
+              window.location.reload()
             }} />}
             {conns.length > 1 && "Leave Room"}  
           </div>
