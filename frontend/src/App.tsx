@@ -18,10 +18,10 @@ import { UserIntro } from "./components/userinfo";
 import { EndCall, VidDivs } from "./components/vids";
 import { ChatPopUp, SchedulePop, SelfCam, UpcomingPop } from "./components/pops";
 // const peer = new RTCPeerConnection( {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
-
+//(import.meta.env.VITE_SOCK_URL as string)"http://localhost:3000"
 export const peer = new Peer();
 const socket = io(
-   (import.meta.env.VITE_SOCK_URL as string) ??
+  (import.meta.env.VITE_SOCK_URL as string) ??
      "https://callie-rooms.onrender.com/"
 );
 
@@ -74,7 +74,9 @@ function App() {
       setChats((prev) => [...prev, data]);
       setMe((prev) => [...prev, false]);
       setSenders((prev) => [...prev, from]);
-      setPop(true)
+      if(!document.getElementById("chats")){
+        setPop(true)
+      }
       setTimeout(()=>{
         setPop(false)
       }, 6000)
@@ -101,6 +103,15 @@ function App() {
       container.scrollTop = container.scrollHeight;
     }
   }, [chats, me]);
+
+  useEffect(()=>{
+     conns.map(p =>{
+      let vid = document.getElementById(p.userId) as HTMLVideoElement
+      if(vid){
+        vid.muted = p.muted
+      }
+     })
+  }, [conns])
   function joinRoom(roomId: string, userId: string, uname: string) {
     socket.emit("join-room", roomId, userId, uname, muted, offed);
     socket.on("joined", (id: string) => {
@@ -172,6 +183,7 @@ function App() {
       call.on("stream", (stream) => {
         addUser(stream, call.peer);
       });
+      peers[call.peer] = call
     }
   });
   function call(id: string) {
@@ -319,7 +331,10 @@ function App() {
             </div>
           )}
           <div className="flex flex-col items-center gap-4">
-          {pop && <ChatPopUp from={senders[senders.length - 1]} message={chats[chats.length - 1]} />}
+          {pop && <ChatPopUp from={senders[senders.length - 1]} message={chats[chats.length - 1]} show={()=>{
+            setShowChat(true)
+            setPop(false)
+          }} />}
             <SelfCam>
               <div className="flex flex-col items-center gap-2">
                 {camStream && <p>You</p>}
@@ -372,7 +387,9 @@ function App() {
             >
               <VidDivs participants={conns} id={id} />
             </div>
-            {conns.length > 1 && <EndCall end={()=>{}} />}
+            {conns.length > 1 && <EndCall end={()=>{
+              socket.emit("leave");
+            }} />}
             {conns.length > 1 && "Leave Room"}  
           </div>
         </div>

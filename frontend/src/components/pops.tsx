@@ -11,13 +11,15 @@ import { Spinner, Tick, XMark } from "./svgs";
 export function ChatPopUp({
   message,
   from,
+  show
 }: {
   from: string;
   message: string;
+  show:React.MouseEventHandler<HTMLDivElement>
 }) {
   return (
     <>
-      <div className="top-2/3 p-4 right-1/2 fixed z-10 rounded bg-[#3C3D37] flex flex-col gap-2">
+      <div className="top-2/3 p-4 right-1/2 fixed z-10 rounded bg-[#3C3D37] flex flex-col gap-2" onClick={show}>
         <p className="self-end text-sm">{from}</p>
         <p className="text-md">{message}</p>
       </div>
