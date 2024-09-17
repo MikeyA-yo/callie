@@ -44,8 +44,8 @@ export function VidDivs({
                     >
                       <p className="self-end">{particpant.uname}</p>
                       <div className="flex gap-1 items-center">
-                        <Mute muted={particpant.muted} />
-                        <OffCam offed={particpant.offed} />
+                        <Mute muted={particpant.muted} cursor={false} />
+                        <OffCam offed={particpant.offed} cursor={false} />
                       </div>
                     </div>
                   </SwiperSlide>

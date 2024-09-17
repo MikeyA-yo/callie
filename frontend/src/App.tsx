@@ -4,12 +4,9 @@ import {
   OpenFile,
   ShowInfo,
   Stats,
-  Write,
-  Read,
-  GetString,
   GetUser,
 } from "../wailsjs/go/main/App";
-import Peer, { DataConnection } from "peerjs";
+import Peer from "peerjs";
 import { io } from "socket.io-client";
 import MediaView from "./components/media";
 import ChatView, { ChatIcon } from "./components/chats";
@@ -358,12 +355,14 @@ function App() {
                           setMuted(!muted);
                         }}
                         muted={muted}
+                        cursor
                       />{" "}
                       <OffCam
                         off={() => {
                           socket.emit("off", peer.id);
                           setOffed(!offed);
                         }}
+                        cursor
                         offed={offed}
                       />
                     </div>

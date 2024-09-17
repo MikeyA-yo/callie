@@ -57,13 +57,18 @@ export default function Starters({
 export function Mute({
   mute,
   muted,
+  cursor
 }: {
   mute?: React.MouseEventHandler<SVGSVGElement>;
   muted: boolean;
+  cursor?:boolean
 }) {
   let clString = muted
     ? "cursor-pointer"
     : "rounded-full p-2 bg-[#ECDFCC] text-[#697565] cursor-pointer";
+    if(!cursor){
+      clString = clString.replace("cursor-pointer", "")
+    }
   return (
     <>
       <div className={clString}>
@@ -76,13 +81,18 @@ export function Mute({
 export function OffCam({
   off,
   offed,
+  cursor
 }: {
   off?: React.MouseEventHandler<SVGSVGElement>;
   offed: boolean;
+  cursor?:boolean
 }) {
   let clString = offed
     ? "cursor-pointer"
     : "rounded-full p-2 bg-[#ECDFCC] text-[#697565] cursor-pointer";
+    if(!cursor){
+      clString = clString.replace("cursor-pointer", "")
+    }
   return (
     <div className={clString}>
       {!offed && <VideoSvg className="size-6" onClick={off} />}
