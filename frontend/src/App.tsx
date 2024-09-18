@@ -28,6 +28,7 @@ function App() {
   //I repeat never write code as ugly as this.
   const [camStream, setCamStream] = useState<MediaStream | null>();
   const [screenStream, setScreenStream] = useState<MediaStream | null>();
+  const [remoteStreams, setRStreams] = useState<MediaStream[]>([])
   const [id, setId] = useState("");
   const [audio, setAudio] = useState(false);
   const [file, setFile] = useState("");
@@ -123,11 +124,12 @@ function App() {
           }
       }
      })
+     console.log(remoteStreams)
   }, [conns])
   function joinRoom(roomId: string, userId: string, uname: string) {
     socket.emit("join-room", roomId, userId, uname, muted, offed);
     socket.on("joined", (id: string) => {
-      call(id);
+     call(id);
     });
   }
   async function Open() {
@@ -194,20 +196,23 @@ function App() {
       call.answer(camStream);
       call.on("stream", (stream) => {
         addUser(stream, call.peer);
+        updateMediaStates()
       });
-      peers[call.peer] = call
+      peers[call.peer] = call;
     }
   });
+  
   function call(id: string) {
     if (camStream) {
       const conn = peer.call(id, camStream as MediaStream);
       conn.on("stream", (stream) => {
         addUser(stream, id);
+        updateMediaStates()
       });
       peers[id] = conn;
     }
   }
-
+  
   function addUser(stream: MediaStream, id: string) {
     const existing = document.getElementById(id);
     if (!existing) {
@@ -223,6 +228,19 @@ function App() {
       let parent = document.getElementById(id.substring(0, id.indexOf("-")));
       parent?.insertBefore(video, parent.lastChild);
     }
+  }
+  function updateMediaStates() {
+    conns.map(p => {
+      let vid = document.getElementById(p.userId) as HTMLVideoElement;
+      if (vid) {
+        vid.muted = p.muted;
+        if (p.offed) {
+          vid.classList.add("hidden");
+        } else {
+          vid.classList.remove("hidden");
+        }
+      }
+    });
   }
   useEffect(() => {
     if (camStream) {
