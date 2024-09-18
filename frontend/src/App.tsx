@@ -14,6 +14,7 @@ import Starters, { Mute, OffCam } from "./components/starters";
 import { UserIntro } from "./components/userinfo";
 import { EndCall, VidDivs } from "./components/vids";
 import { ChatPopUp, SchedulePop, SelfCam, UpcomingPop } from "./components/pops";
+import { UserAvatar } from "./components/svgs";
 // const peer = new RTCPeerConnection( {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
 //(import.meta.env.VITE_SOCK_URL as string)"http://localhost:3000"
 export const peer = new Peer();
@@ -49,6 +50,8 @@ function App() {
   const [pop, setPop] = useState(false);
   const [sPop, setSPop] = useState(false);
   const [uPop, setUPop] = useState(false);
+  const [lPop, setLPop] = useState(false);
+  const [pUsers, setPUsers] = useState<string[]>([])
   const popupRef = useRef(null);
   const peers: any = {};
   const cam: HTMLVideoElement = document.getElementById(
@@ -63,9 +66,14 @@ function App() {
         "Info: Needs Internet"
       );
     }
-    socket.on("user-disconnected", (id: string, p) => {
+    socket.on("user-disconnected", (id: string, p:Particpant[], uname:string) => {
       peers[id] && peers[id].close();
       setConns(p);
+      setPUsers(prev => [...prev, uname])
+      setLPop(true);
+      setTimeout(()=>{
+        setLPop(false)
+      }, 4500)
     });
     socket.on("data", (data, from) => {
       //todo /// thinking of not implementing this feature and turning it to chat box, pics may work tho
@@ -365,6 +373,9 @@ function App() {
             setShowChat(true)
             setPop(false)
           }} />}
+          {lPop && <ChatPopUp from={pUsers[pUsers.length - 1]} message="left" show={()=>{
+            setLPop(false)
+          }} />}
             <SelfCam>
               <div className="flex flex-col items-center gap-2">
                 {camStream && <p>You</p>}
@@ -373,12 +384,13 @@ function App() {
                   controls={false}
                   playsInline
                   id="userCam"
-                  className="max-h-44 max-w-44 rounded"
+                  className={`max-h-44 max-w-44 rounded ${offed ? "hidden" : "" }`}
                   muted
                   onDoubleClick={(e) => {
                     e.currentTarget.requestFullscreen();
                   }}
                 />
+                {camStream && offed && <div className="p-2 bg-[#697565]"><UserAvatar className="size-32" /></div>}
                 {camStream && (
                   <div className="flex-col flex gap-3 items-center">
                     <div className="flex gap-1 items-center">
