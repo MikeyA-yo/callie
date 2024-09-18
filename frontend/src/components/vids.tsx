@@ -7,6 +7,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Phone, UserAvatar } from "./svgs";
+import { useEffect } from "react";
 export function VidDivs({
   participants,
   id,
@@ -14,6 +15,19 @@ export function VidDivs({
   participants: Particpant[];
   id: string;
 }) {
+  useEffect(()=>{
+     participants.map(p =>{
+      let vid = document.getElementById(p.userId) as HTMLVideoElement;
+      if(vid){
+        vid.muted = p.muted
+          if(p.offed){
+            vid.classList.add("hidden");
+          }else{
+             vid.classList.remove("hidden");
+          }
+      }
+     })
+  }, [participants])
   if(participants.length == 0){
     return <></>
   }else{

@@ -115,7 +115,7 @@ function App() {
      conns.map(p =>{
       let vid = document.getElementById(p.userId) as HTMLVideoElement;
       if(vid){
-        vid.muted = p.muted
+          vid.muted = p.muted
           if(p.offed){
             vid.classList.add("hidden");
           }else{
