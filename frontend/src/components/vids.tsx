@@ -17,6 +17,7 @@ export function VidDivs({
   if(participants.length == 0){
     return <></>
   }else{
+   
     return (
       <>
         <Swiper
@@ -30,6 +31,7 @@ export function VidDivs({
             if (participant.userId === id) {
               return <></>;
             } else {
+              let clName = participant.offed ? "size-32" : "size-32 hidden";
               return (
                 <>
                   <SwiperSlide
@@ -43,7 +45,7 @@ export function VidDivs({
                       className="flex flex-col gap-1 items-center"
                     >
                       <p className="self-end">{participant.uname}</p>
-                      <UserAvatar className="size-32 hidden" id={participant.userId.split("-")[participant.userId.length - 1]} />
+                      <UserAvatar className={clName} id={participant.userId.split("-")[participant.userId.length - 1]} />
                       <div className="flex gap-1 items-center">
                         <Mute muted={participant.muted} cursor={false} />
                         <OffCam offed={participant.offed} cursor={false} />

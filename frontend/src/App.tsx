@@ -87,11 +87,11 @@ function App() {
     socket.on("offed", (id, val)=>{
       if (document.getElementById(id)) {
         let vid = document.getElementById(id) as HTMLVideoElement;
-        let svgE = document.getElementById(id.split("-")[id.length - 1]);
-        val && vid.classList.add("hidden");
-        val && svgE?.classList.remove("hidden")
-        !val && vid.classList.remove("hidden");
-        !val && svgE?.classList.add("hidden")
+        if(val){
+          vid.classList.add("hidden");
+        }else{
+           vid.classList.remove("hidden");
+        }
       }
     })
     socket.on("updateP", (p) => {
@@ -113,9 +113,14 @@ function App() {
 
   useEffect(()=>{
      conns.map(p =>{
-      let vid = document.getElementById(p.userId) as HTMLVideoElement
+      let vid = document.getElementById(p.userId) as HTMLVideoElement;
       if(vid){
         vid.muted = p.muted
+          if(p.offed){
+            vid.classList.add("hidden");
+          }else{
+             vid.classList.remove("hidden");
+          }
       }
      })
   }, [conns])
