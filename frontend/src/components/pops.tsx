@@ -11,15 +11,18 @@ import { Spinner, Tick, XMark } from "./svgs";
 export function ChatPopUp({
   message,
   from,
-  show
+  show,
 }: {
   from: string;
   message: string;
-  show:React.MouseEventHandler<HTMLDivElement>
+  show: React.MouseEventHandler<HTMLDivElement>;
 }) {
   return (
     <>
-      <div className="top-2/3 p-4 right-1/2 fixed z-10 rounded bg-[#3C3D37] flex flex-col gap-2" onClick={show}>
+      <div
+        className="top-2/3 p-4 right-1/2 fixed z-10 rounded bg-[#3C3D37] flex flex-col gap-2"
+        onClick={show}
+      >
         <p className="self-end text-sm">{from}</p>
         <p className="text-md">{message}</p>
       </div>
@@ -43,11 +46,12 @@ export function SchedulePop({
   uname: string;
 }) {
   const [data, setData] = useState({ id: "", exp: 0 });
+  const [time, setTime] = useState(0);
   const [load, setLoad] = useState(false);
   const [a, b] = useState(false);
   const [c, d] = useState(false);
   const [e, f] = useState("");
-  // const [g, h] = useState<Array<any>>([])
+  const [g, h] = useState<string>()
   useEffect(() => {
     (async function () {
       let meetings = await GetMeetings();
@@ -58,7 +62,13 @@ export function SchedulePop({
     setLoad(true);
     let val = await Schedule(data.exp, uname, data.id);
     setLoad(false);
+    if(time < Date.now()){
+      h("Date and Time Can't be in the past");
+      d(true)
+      return
+    }
     if (val === false) {
+      h("Schedule Already Exists")
       d(true);
     } else {
       if (e.includes("meetings")) {
@@ -91,7 +101,8 @@ export function SchedulePop({
       <div className="fixed top-1/2 z-20 bg-[#697565] transform -translate-x-1/2 -translate-y-1/2 left-1/2">
         <div className="flex flex-col p-4 gap-2">
           {a && <Success />}
-          {c && !a && <E />}
+          {c && !a && !g && <E />}
+          {c && !a && g && <E text={g} />}
           <h3 className="text-xl">Schedule a new meeting</h3>
           <div className="flex flex-col gap-2">
             <p>Enter Desired ID:</p>
@@ -105,6 +116,7 @@ export function SchedulePop({
             <input
               className="p-2 text-[#697565]"
               onChange={(e) => {
+                setTime(new Date(e.target.value).getTime());
                 setData((prev) => {
                   return {
                     ...prev,
@@ -143,11 +155,12 @@ function Success() {
     </>
   );
 }
-function E() {
+function E({text}:{text?:string}) {
   return (
     <>
       <div className="bg-red-500 flex gap-2 items-center justify-around p-3">
-        Schedule failed to create, this ID already exists or network issues{" "}
+        {!text && "Schedule failed to create, this ID already exists or network issue"}
+        {text && text}
         <XMark className="size-6 border-[#697565] rounded border p-1" />
       </div>{" "}
     </>
@@ -168,11 +181,13 @@ export function UpcomingPop({
       setMeetings(gM);
       if (gM.length > 4) {
         setmeetAr(JSON.parse(gM).meetings);
-        JSON.parse(gM).meetings.map(((meeting:{roomId:string, expiryDate:number}) =>{
-          if(meeting.expiryDate < Date.now()){
-            deleteSch(meeting.roomId)
+        JSON.parse(gM).meetings.map(
+          (meeting: { roomId: string; expiryDate: number }) => {
+            if (meeting.expiryDate < Date.now()) {
+              deleteSch(meeting.roomId);
+            }
           }
-        }))
+        );
       }
     })();
   }, []);
@@ -196,7 +211,10 @@ export function UpcomingPop({
                 <>
                   <div className="flex flex-col bg-[#3C3D37] p-2 rounded gap-2 justify-around">
                     <div>
-                      <p>Meeting ID: <span className="font-bold">{meet.roomId}</span></p>
+                      <p>
+                        Meeting ID:{" "}
+                        <span className="font-bold">{meet.roomId}</span>
+                      </p>
                     </div>
                     <div>
                       Meeting Date and Time:
@@ -209,7 +227,7 @@ export function UpcomingPop({
                         deleteSch(meet.roomId);
                       }}
                     >
-                      Delete 
+                      Delete
                     </button>
                   </div>
                 </>

@@ -1,11 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
-import {
-  OpenFile,
-  ShowInfo,
-  Stats,
-  GetUser,
-} from "../wailsjs/go/main/App";
+import { OpenFile, ShowInfo, Stats, GetUser } from "../wailsjs/go/main/App";
 import Peer from "peerjs";
 import { io } from "socket.io-client";
 import MediaView from "./components/media";
@@ -13,14 +8,19 @@ import ChatView, { ChatIcon } from "./components/chats";
 import Starters, { Mute, OffCam } from "./components/starters";
 import { UserIntro } from "./components/userinfo";
 import { EndCall, VidDivs } from "./components/vids";
-import { ChatPopUp, SchedulePop, SelfCam, UpcomingPop } from "./components/pops";
+import {
+  ChatPopUp,
+  SchedulePop,
+  SelfCam,
+  UpcomingPop,
+} from "./components/pops";
 import { UserAvatar } from "./components/svgs";
 // const peer = new RTCPeerConnection( {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]});
 //(import.meta.env.VITE_SOCK_URL as string)"http://localhost:3000"
 export const peer = new Peer();
 const socket = io(
   (import.meta.env.VITE_SOCK_URL as string) ??
-     "https://callie-rooms.onrender.com/"
+    "https://callie-rooms.onrender.com/"
 );
 
 function App() {
@@ -29,7 +29,7 @@ function App() {
   //I repeat never write code as ugly as this.
   const [camStream, setCamStream] = useState<MediaStream | null>();
   const [screenStream, setScreenStream] = useState<MediaStream | null>();
-  const [remoteStreams, setRStreams] = useState<MediaStream[]>([])
+  const [remoteStreams, setRStreams] = useState<MediaStream[]>([]);
   const [id, setId] = useState("");
   const [audio, setAudio] = useState(false);
   const [file, setFile] = useState("");
@@ -51,7 +51,7 @@ function App() {
   const [sPop, setSPop] = useState(false);
   const [uPop, setUPop] = useState(false);
   const [lPop, setLPop] = useState(false);
-  const [pUsers, setPUsers] = useState<string[]>([])
+  const [pUsers, setPUsers] = useState<string[]>([]);
   const popupRef = useRef(null);
   const peers: any = {};
   const cam: HTMLVideoElement = document.getElementById(
@@ -66,26 +66,29 @@ function App() {
         "Info: Needs Internet"
       );
     }
-    socket.on("user-disconnected", (id: string, p:Particpant[], uname:string) => {
-      peers[id] && peers[id].close();
-      setConns(p);
-      setPUsers(prev => [...prev, uname])
-      setLPop(true);
-      setTimeout(()=>{
-        setLPop(false)
-      }, 4500)
-    });
+    socket.on(
+      "user-disconnected",
+      (id: string, p: Particpant[], uname: string) => {
+        peers[id] && peers[id].close();
+        setConns(p);
+        setPUsers((prev) => [...prev, uname]);
+        setLPop(true);
+        setTimeout(() => {
+          setLPop(false);
+        }, 4500);
+      }
+    );
     socket.on("data", (data, from) => {
       //todo /// thinking of not implementing this feature and turning it to chat box, pics may work tho
       setChats((prev) => [...prev, data]);
       setMe((prev) => [...prev, false]);
       setSenders((prev) => [...prev, from]);
-      if(!document.getElementById("chats")){
-        setPop(true)
+      if (!document.getElementById("chats")) {
+        setPop(true);
       }
-      setTimeout(()=>{
-        setPop(false)
-      }, 6000)
+      setTimeout(() => {
+        setPop(false);
+      }, 6000);
     });
     socket.on("muted", (id, val) => {
       if (document.getElementById(id)) {
@@ -93,16 +96,16 @@ function App() {
         vid.muted = val;
       }
     });
-    socket.on("offed", (id, val)=>{
+    socket.on("offed", (id, val) => {
       if (document.getElementById(id)) {
         let vid = document.getElementById(id) as HTMLVideoElement;
-        if(val){
+        if (val) {
           vid.classList.add("hidden");
-        }else{
-           vid.classList.remove("hidden");
+        } else {
+          vid.classList.remove("hidden");
         }
       }
-    })
+    });
     socket.on("updateP", (p) => {
       setConns(p);
     });
@@ -120,24 +123,27 @@ function App() {
     }
   }, [chats, me]);
 
-  useEffect(()=>{
-     conns.map(p =>{
+  useEffect(() => {
+    conns.map((p) => {
       let vid = document.getElementById(p.userId) as HTMLVideoElement;
-      if(vid){
-          vid.muted = p.muted
-          if(p.offed){
-            vid.classList.add("hidden");
-          }else{
-             vid.classList.remove("hidden");
-          }
+      if (vid) {
+        setJoin(false)
+        vid.muted = p.muted;
+        if (p.offed) {
+          vid.classList.add("hidden");
+        } else {
+          vid.classList.remove("hidden");
+        }
       }
-     })
-     console.log(remoteStreams)
-  }, [conns])
+    });
+    if(!join){
+      conns.length > 0 && setJoin(false)
+    }
+  }, [conns]);
   function joinRoom(roomId: string, userId: string, uname: string) {
     socket.emit("join-room", roomId, userId, uname, muted, offed);
     socket.on("joined", (id: string) => {
-     call(id);
+      call(id);
     });
   }
   async function Open() {
@@ -204,23 +210,23 @@ function App() {
       call.answer(camStream);
       call.on("stream", (stream) => {
         addUser(stream, call.peer);
-        updateMediaStates()
+        updateMediaStates();
       });
       peers[call.peer] = call;
     }
   });
-  
+
   function call(id: string) {
     if (camStream) {
       const conn = peer.call(id, camStream as MediaStream);
       conn.on("stream", (stream) => {
         addUser(stream, id);
-        updateMediaStates()
+        updateMediaStates();
       });
       peers[id] = conn;
     }
   }
-  
+
   function addUser(stream: MediaStream, id: string) {
     const existing = document.getElementById(id);
     if (!existing) {
@@ -238,10 +244,11 @@ function App() {
     }
   }
   function updateMediaStates() {
-    conns.map(p => {
+    conns.map((p) => {
       let vid = document.getElementById(p.userId) as HTMLVideoElement;
       if (vid) {
         vid.muted = p.muted;
+        setJoin(false)
         if (p.offed) {
           vid.classList.add("hidden");
         } else {
@@ -312,7 +319,6 @@ function App() {
       video: true,
     });
     setScreenStream(media);
-    //cam.srcObject = media;
   }
   return (
     <div className="bg-[#1E201E] text-[#ECDFCC] min-h-screen overflow-auto flex flex-col items-center gap-4 justify-evenly">
@@ -335,21 +341,23 @@ function App() {
           setMedia(!media);
         }}
         schedule={() => {
-          setSPop(true)
-          setUPop(false)
+          setSPop(true);
+          setUPop(false);
         }}
-        upc={()=>{
-          setUPop(true)
-          setSPop(false)
+        upc={() => {
+          setUPop(true);
+          setSPop(false);
         }}
         text={camStream ? "Close Camera" : "Open Camera"}
       />
       <div className="flex gap-4 w-full items-center p-4 justify-evenly max-h-[80%] overflow-auto">
-        {sPop && <SchedulePop cancel={()=> setSPop(false)} uname={person.name} />}
-        {uPop && <UpcomingPop cancel={()=> setUPop(false)} />}
+        {sPop && (
+          <SchedulePop cancel={() => setSPop(false)} uname={person.name} />
+        )}
+        {uPop && <UpcomingPop cancel={() => setUPop(false)} />}
         <div className="flex flex-col grow gap-4 p-2">
           {join && (
-            <div className="flex flex-col text-xl gap-2">
+            <div className={`flex flex-col text-xl gap-2 ${!showChat ? "w-1/2" : ""}`}>
               Enter Room Address:
               <input
                 className="p-2 text-[#697565] rounded"
@@ -358,24 +366,43 @@ function App() {
                   setRemoteId(e.target.value);
                 }}
               />
-              <button
-                className="p-2 bg-[#3C3D37]"
-                onClick={() => {
-                  joinRoom(remoteId, id, person.username);
-                }}
-              >
-                Join Room
-              </button>
+              <div className="flex gap-2">
+                <button
+                  className="p-2 bg-[#3C3D37] grow"
+                  onClick={() => {
+                    joinRoom(remoteId, id, person.username);
+                  }}
+                >
+                  Join Room
+                </button>
+                <button
+                 className="p-2 bg-[#3C3D37] grow"
+                 onClick={()=> setJoin(false)}
+                >
+                  Cancel
+                </button></div>
             </div>
           )}
           <div className="flex flex-col items-center gap-4">
-          {pop && <ChatPopUp from={senders[senders.length - 1]} message={chats[chats.length - 1]} show={()=>{
-            setShowChat(true)
-            setPop(false)
-          }} />}
-          {lPop && <ChatPopUp from={pUsers[pUsers.length - 1]} message="left" show={()=>{
-            setLPop(false)
-          }} />}
+            {pop && (
+              <ChatPopUp
+                from={senders[senders.length - 1]}
+                message={chats[chats.length - 1]}
+                show={() => {
+                  setShowChat(true);
+                  setPop(false);
+                }}
+              />
+            )}
+            {lPop && (
+              <ChatPopUp
+                from={pUsers[pUsers.length - 1]}
+                message="left"
+                show={() => {
+                  setLPop(false);
+                }}
+              />
+            )}
             <SelfCam>
               <div className="flex flex-col items-center gap-2">
                 {camStream && <p>You</p>}
@@ -384,13 +411,19 @@ function App() {
                   controls={false}
                   playsInline
                   id="userCam"
-                  className={`max-h-44 max-w-44 rounded ${offed ? "hidden" : "" }`}
+                  className={`max-h-44 max-w-44 rounded ${
+                    offed ? "hidden" : ""
+                  }`}
                   muted
                   onDoubleClick={(e) => {
                     e.currentTarget.requestFullscreen();
                   }}
                 />
-                {camStream && offed && <div className="p-2 bg-[#697565]"><UserAvatar className="size-32" /></div>}
+                {camStream && offed && (
+                  <div className="p-2 bg-[#697565]">
+                    <UserAvatar className="size-32" />
+                  </div>
+                )}
                 {camStream && (
                   <div className="flex-col flex gap-3 items-center">
                     <div className="flex gap-1 items-center">
@@ -431,20 +464,26 @@ function App() {
             >
               <VidDivs participants={conns} id={id} />
             </div>
-            {conns.length > 1 && <EndCall end={()=>{
-              let dConns = Object.values(peers)
-              let ids = Object.keys(peers);
-              ids.forEach((id) =>{
-                 document.getElementById(id.slice(0, id.indexOf("-")))?.remove()
-              })
-              dConns.forEach((conn:any) =>{
-                conn.close()
-              })
-              setConns([])
-              socket.emit("leave");
-              window.location.reload()
-            }} />}
-            {conns.length > 1 && "Leave Room"}  
+            {conns.length > 1 && (
+              <EndCall
+                end={() => {
+                  let dConns = Object.values(peers);
+                  let ids = Object.keys(peers);
+                  ids.forEach((id) => {
+                    document
+                      .getElementById(id.slice(0, id.indexOf("-")))
+                      ?.remove();
+                  });
+                  dConns.forEach((conn: any) => {
+                    conn.close();
+                  });
+                  setConns([]);
+                  socket.emit("leave");
+                  window.location.reload();
+                }}
+              />
+            )}
+            {conns.length > 1 && "Leave Room"}
           </div>
         </div>
         {showChat && (
