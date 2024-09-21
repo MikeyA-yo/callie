@@ -341,8 +341,12 @@ function App() {
           setMedia(!media);
         }}
         schedule={() => {
-          setSPop(true);
-          setUPop(false);
+          if(person.username.length > 1){
+            setSPop(true);
+            setUPop(false);
+          }else{
+            ShowInfo("Your Details Needed Before you can schedule meetings", "Details needed")
+          }
         }}
         upc={() => {
           setUPop(true);
