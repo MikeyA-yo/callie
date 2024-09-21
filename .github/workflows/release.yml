@@ -1,14 +1,9 @@
 name: Release
 
 on: 
-  release:
-    types: [ published ]
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Version tag'
-        required: true
-        default: '0.0.1'
+  push:
+   tags:
+     - 'v*'
 
 jobs:
   build-windows:
@@ -59,11 +54,36 @@ jobs:
           files: ./build/bin/Callie.exe 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload binary as artifact
-        uses: actions/upload-artifact@v3
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: ${{ matrix.build-name }}-binary
-          path: ./build/bin/Callie.exe # Adjust to your actual build output path
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Changes in this Release
+            - Nothing
+            - Nothing
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./build/bin/Callie.exe
+          asset_name: Callie.exe
+          asset_content_type: application/exe   
+  
+      # - name: Upload binary as artifact
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: ${{ matrix.build-name }}-binary
+      #     path: ./build/bin/Callie.exe # Adjust to your actual build output path
 
   # release-windows:
   #   needs: build-windows
