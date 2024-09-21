@@ -1,23 +1,22 @@
-name: Release
+name: Release Linux
 
 on: 
-  push:
-      tags:
-          -v
-
+    push:
+        tags:
+            -v
 jobs:
-  build-windows:
+  build-linux: 
     strategy:
       fail-fast: false
       matrix:
         platform:
-          - windows/arm64
-          - windows/amd64
+          - linux/arm64
+          - linux/amd64
         include:
-          - os: windows-latest
-            platform: windows/amd64
-            build-name: Callie-windows
-    runs-on: windows-latest
+          - os: linux-latest
+            platform: linux/amd64
+            build-name: Callie-linux
+    runs-on: linux-latest
 
     steps:
       - name: Checkout repository
@@ -47,26 +46,25 @@ jobs:
       # Build the Wails app
       - name: Build Wails app
         run: |
-          wails build -platform ${{ matrix.platform }} -webview2 download
+          wails build -platform ${{ matrix.platform }}
 
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.build-name }}-binary
-          path: ./build/bin/Callie.exe # Adjust to your actual build output path
-
-  release-windows:
-    needs: build-windows
+          path: ./build/bin/Callie # Adjust to your actual build output path
+  release-linux:
+    needs: build-linux
     runs-on: ubuntu-latest
     steps:
       - name: Download Windows binary
         uses: actions/download-artifact@v3
         with:
-          name: Callie-windows-binary  # Windows build artifact
+          name: Callie-linux-binary 
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2.0.8
         with:
-          files: ./Callie-windows  
+          files: ./Callie-linux  
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
