@@ -52,8 +52,8 @@ jobs:
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.build.name }}-binary
-          path: ./build/bin/${{ matrix.build.name }}  # Adjust to your actual build output path
+          name: ${{ matrix.build-name }}-binary
+          path: ./build/bin/${{ matrix.build-name }}  # Adjust to your actual build output path
 
   release:
     needs: build
