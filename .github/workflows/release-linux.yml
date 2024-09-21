@@ -21,7 +21,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgtk-3-dev \
+            libwebkit2gtk-4.0-dev \
+            pkg-config \
+            build-essential
       # Install dependencies (ensure Go and Node.js are installed)
       - name: Set up Go
         uses: actions/setup-go@v4
