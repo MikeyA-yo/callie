@@ -44,11 +44,11 @@ jobs:
       - name: Add Secret
         shell: bash
         run: echo ${{ secrets.MONGO_URI }} > secret.txt 
-
+        
       # Build the Wails app
       - name: Build Wails app
         run: |
-          wails build 
+          wails build -platform ${{ matrix.platform }} -webview2 download
 
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v3

@@ -13,9 +13,6 @@ jobs:
         ]
     runs-on: ${{ matrix.build.os }}
     steps:
-      - name: Add Secret
-        shell: bash
-        run:  echo ${{ secrets.MONGO_URI }} > secret.txt 
       - uses: actions/checkout@v2
         with:
           submodules: recursive
