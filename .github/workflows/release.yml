@@ -1,9 +1,14 @@
 name: Release
 
 on: 
-  push:
-      tags:
-          -v
+  release:
+    types: [ published ]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version tag'
+        required: true
+        default: '0.0.1'
 
 jobs:
   build-windows:
