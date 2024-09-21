@@ -48,7 +48,7 @@ jobs:
            wails build -platform ${{ matrix.build.platform }} -webview2 download
       - uses: actions/upload-artifact@v4
         with:
-          name: Callie-${{ matrix.build.platform }}
+          name: Callie-${{ matrix.build.os }}
           path: ./build/bin/      
       
   macos:
