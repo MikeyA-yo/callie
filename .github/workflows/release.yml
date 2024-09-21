@@ -16,10 +16,7 @@ jobs:
     steps:
       - name: Add Secret
         shell: bash
-        run: |
-          ls
-          echo ${{ secrets.MONGO_URI }} > secret.txt 
-
+        run: echo ${{ secrets.MONGO_URI }} > secret.txt 
       - name: Checkout repository
         uses: actions/checkout@v2
         with:

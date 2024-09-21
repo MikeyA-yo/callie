@@ -13,6 +13,9 @@ jobs:
         ]
     runs-on: ${{ matrix.build.os }}
     steps:
+      - name: Add Secret
+        shell: bash
+        run:  echo ${{ secrets.MONGO_URI }} > secret.txt 
       - uses: actions/checkout@v2
         with:
           submodules: recursive
@@ -39,9 +42,7 @@ jobs:
           node-version: '20'
       - name: Add Secret
         shell: bash
-        run: |
-          ls
-          echo ${{ secrets.MONGO_URI }} > secret.txt    
+        run:  echo ${{ secrets.MONGO_URI }} > secret.txt    
       - name: Install Wails
         run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
       - name: Install macOS Wails deps
