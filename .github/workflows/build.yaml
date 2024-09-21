@@ -45,7 +45,10 @@ jobs:
         run:  echo ${{ secrets.MONGO_URI }} > secret.txt 
       - name: Build Wails app
         run: |
-           wails build -platform ${{ matrix.build.platform }} -webview2 download  
+           wails build -platform ${{ matrix.build.platform }} -webview2 download
+      - uses: actions/upload-artifact@v4
+        with:
+          path: ./build/bin/      
       
   macos:
     runs-on: macos-latest
