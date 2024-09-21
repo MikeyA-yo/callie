@@ -26,7 +26,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-
+      # Install Wails
+      - name: Install Wails
+        run: |
+          go install github.com/wailsapp/wails/v2/cmd/wails@latest
+          wails doctor  
       - name: Add Secret  
         shell: bash
         run:  echo ${{ secrets.MONGO_URI }} > secret.txt 
