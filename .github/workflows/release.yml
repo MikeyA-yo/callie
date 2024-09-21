@@ -72,6 +72,6 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2.0.8
         with:
-          files: ./Callie-windows  
+          files: ./Callie-windows-binary  
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

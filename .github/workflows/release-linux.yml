@@ -1,6 +1,6 @@
 name: Release Linux
 
-on: 
+on:   
   release:
     types: [ published ]
   workflow_dispatch:
@@ -78,6 +78,6 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2.0.8
         with:
-          files: ./Callie-linux  
+          files: ./Callie-linux-binary  
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
