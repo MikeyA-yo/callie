@@ -47,13 +47,13 @@ jobs:
       # Build the Wails app
       - name: Build Wails app
         run: |
-          wails build -platform ${{ matrix.platform }} -name ${{ matrix.build-name }}
+          wails build -platform ${{ matrix.platform }} -webview2 -download
 
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.build-name }}-binary
-          path: ./build/bin/${{ matrix.build-name }}  # Adjust to your actual build output path
+          path: ./build/bin/Callie.exe # Adjust to your actual build output path
 
   release:
     needs: build
