@@ -14,8 +14,11 @@ jobs:
     runs-on: ${{ matrix.build.os }}
 
     steps:
-      - name: Add secret
-        run: echo ${{ secrets.MONGO_URI }} > secret.txt
+      - name: Add Secret
+        shell: bash
+        run: |
+          ls
+          echo ${{ secrets.MONGO_URI }} > secret.txt 
 
       - name: Checkout repository
         uses: actions/checkout@v2

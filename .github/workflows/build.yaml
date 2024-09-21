@@ -37,6 +37,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20'
+      - name: Add Secret
+        shell: bash
+        run: |
+          ls
+          echo ${{ secrets.MONGO_URI }} > secret.txt    
       - name: Install Wails
         run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
       - name: Install macOS Wails deps
