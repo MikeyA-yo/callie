@@ -47,7 +47,7 @@ jobs:
       # Build the Wails app
       - name: Build Wails app
         run: |
-          wails build -platform ${{ matrix.platform }} -webview2 -download
+          wails build -platform ${{ matrix.platform }} -webview2 download
 
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v3
