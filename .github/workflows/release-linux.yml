@@ -11,7 +11,7 @@ on:
         default: '0.0.1'
 
 jobs:
-  build-linux: 
+  release-build-linux: 
     strategy:
       fail-fast: false
       matrix:
@@ -60,24 +60,30 @@ jobs:
       - name: Build Wails app
         run: |
           wails build -platform ${{ matrix.platform }}
-
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2.0.8
+        with:
+         files: ./build/bin/Callie      
+        env:
+           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.build-name }}-binary
           path: ./build/bin/Callie # Adjust to your actual build output path
-  release-linux:
-    needs: build-linux
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download Windows binary
-        uses: actions/download-artifact@v3
-        with:
-          name: Callie-linux-binary 
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2.0.8
-        with:
-          files: ./build/bin/Callie  
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+#   release-linux:
+#     needs: build-linux
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Download Windows binary
+#         uses: actions/download-artifact@v3
+#         with:
+#           name: Callie-linux-binary 
+
+#       - name: Create GitHub Release
+#         uses: softprops/action-gh-release@v2.0.8
+#         with:
+#           files: ./build/bin/Callie  
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
