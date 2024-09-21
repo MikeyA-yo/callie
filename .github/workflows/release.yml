@@ -1,0 +1,61 @@
+name: Release
+
+on: push
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        build: [
+          {name: Callie, platform: linux/amd64, os: ubuntu-latest},
+          {name: Callie, platform: windows/amd64, os: windows-latest},
+        ]
+    runs-on: ${{ matrix.build.os }}
+
+    steps:
+      - name: Add secret
+        run: echo ${{ secrets.MONGO_URI }} > secret.txt
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Build Wails app
+        uses: dAppServer/wails-build-action@v2.2
+        with:
+          build-name: ${{ matrix.build.name }}
+          build-platform: ${{ matrix.build.platform }}
+
+      - name: Upload binary as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.build.name }}-binary
+          path: ./build/bin/${{ matrix.build.name }}  # Adjust to your actual build output path
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Linux binary
+        uses: actions/download-artifact@v3
+        with:
+          name: Callie-binary  # Linux build artifact
+
+      - name: Download Windows binary
+        uses: actions/download-artifact@v3
+        with:
+          name: Callie-binary  # Windows build artifact
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2.0.8
+        with:
+          files: |
+            ./Callie-linux  
+            ./Callie-windows  
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+            
