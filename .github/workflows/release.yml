@@ -7,26 +7,47 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build: [
-          {name: Callie, platform: linux/amd64, os: ubuntu-latest},
-          {name: Callie, platform: windows/amd64, os: windows-latest},
-        ]
-    runs-on: ${{ matrix.build.os }}
+        os: [ubuntu-latest, windows-latest]
+        platform: [linux/amd64, windows/amd64]
+        include:
+          - os: ubuntu-latest
+            platform: linux/amd64
+            build-name: Callie-linux
+          - os: windows-latest
+            platform: windows/amd64
+            build-name: Callie-windows
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Add Secret
         shell: bash
         run: echo ${{ secrets.MONGO_URI }} > secret.txt 
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: recursive
 
-      - name: Build Wails app
-        uses: dAppServer/wails-build-action@v2.2
+      # Install dependencies (ensure Go and Node.js are installed)
+      - name: Set up Go
+        uses: actions/setup-go@v4
         with:
-          build-name: ${{ matrix.build.name }}
-          build-platform: ${{ matrix.build.platform }}
+          go-version: '1.21'  # Use your preferred Go version
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'  # Use your preferred Node.js version
+
+      # Install Wails
+      - name: Install Wails
+        run: |
+          go install github.com/wailsapp/wails/v2/cmd/wails@latest
+          wails doctor  # Ensure Wails is set up correctly
+
+      # Build the Wails app
+      - name: Build Wails app
+        run: |
+          wails build -platform ${{ matrix.platform }} -name ${{ matrix.build-name }}
 
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v3
