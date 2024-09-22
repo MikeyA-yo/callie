@@ -127,7 +127,7 @@ function App() {
     conns.map((p) => {
       let vid = document.getElementById(p.userId) as HTMLVideoElement;
       if (vid) {
-        setJoin(false)
+        setJoin(false);
         vid.muted = p.muted;
         if (p.offed) {
           vid.classList.add("hidden");
@@ -136,8 +136,8 @@ function App() {
         }
       }
     });
-    if(!join){
-      conns.length > 0 && setJoin(false)
+    if (!join) {
+      conns.length > 0 && setJoin(false);
     }
   }, [conns]);
   function joinRoom(roomId: string, userId: string, uname: string) {
@@ -248,7 +248,7 @@ function App() {
       let vid = document.getElementById(p.userId) as HTMLVideoElement;
       if (vid) {
         vid.muted = p.muted;
-        setJoin(false)
+        setJoin(false);
         if (p.offed) {
           vid.classList.add("hidden");
         } else {
@@ -326,34 +326,39 @@ function App() {
         <h1 className="text-3xl">Chat and Stream Online</h1>
       </div>
       <UserIntro />
-      <Starters
-        close={() => {
-          if (!camStream) {
-            loadCam();
-          } else {
-            closeCam();
-          }
-        }}
-        join={() => {
-          setJoin(true);
-        }}
-        media={() => {
-          setMedia(!media);
-        }}
-        schedule={() => {
-          if(person.username.length > 1){
-            setSPop(true);
-            setUPop(false);
-          }else{
-            ShowInfo("Your Details Needed Before you can schedule meetings", "Details needed")
-          }
-        }}
-        upc={() => {
-          setUPop(true);
-          setSPop(false);
-        }}
-        text={camStream ? "Close Camera" : "Open Camera"}
-      />
+      {person && (
+        <Starters
+          close={() => {
+            if (!camStream) {
+              loadCam();
+            } else {
+              closeCam();
+            }
+          }}
+          join={() => {
+            setJoin(true);
+          }}
+          media={() => {
+            setMedia(!media);
+          }}
+          schedule={() => {
+            if (person.username.length > 1) {
+              setSPop(true);
+              setUPop(false);
+            } else {
+              ShowInfo(
+                "Your Details Needed Before you can schedule meetings",
+                "Details needed"
+              );
+            }
+          }}
+          upc={() => {
+            setUPop(true);
+            setSPop(false);
+          }}
+          text={camStream ? "Close Camera" : "Open Camera"}
+        />
+      )}
       <div className="flex gap-4 w-full items-center p-4 justify-evenly max-h-[80%] overflow-auto">
         {sPop && (
           <SchedulePop cancel={() => setSPop(false)} uname={person.name} />
@@ -361,7 +366,11 @@ function App() {
         {uPop && <UpcomingPop cancel={() => setUPop(false)} />}
         <div className="flex flex-col grow gap-4 p-2">
           {join && (
-            <div className={`flex flex-col text-xl gap-2 ${!showChat ? "w-1/2" : ""}`}>
+            <div
+              className={`flex flex-col text-xl gap-2 ${
+                !showChat ? "w-1/2" : ""
+              }`}
+            >
               Enter Room Address:
               <input
                 className="p-2 text-[#697565] rounded"
@@ -380,11 +389,12 @@ function App() {
                   Join Room
                 </button>
                 <button
-                 className="p-2 bg-[#3C3D37] grow"
-                 onClick={()=> setJoin(false)}
+                  className="p-2 bg-[#3C3D37] grow"
+                  onClick={() => setJoin(false)}
                 >
                   Cancel
-                </button></div>
+                </button>
+              </div>
             </div>
           )}
           <div className="flex flex-col items-center gap-4">

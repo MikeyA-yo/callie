@@ -23,7 +23,7 @@ export function UserIntro(){
         <>
           {!userOb && 
           <div className="flex flex-col items-center w-full gap-1">
-            <h1 className="text-2xl">Hello user, you don't have a name Set-up, let's do that</h1>
+            <h1 className="text-2xl">Hello user, you don't have a name set-up, let's do that to continue and make calls</h1>
              <div className="flex flex-col w-full gap-2 items-center">
                 <p>Name: </p>
                 <input className="p-2 rounded text-[#3C3D37]" placeholder="Full Name" name="name" id="n" onChange={(e)=>{
@@ -52,7 +52,7 @@ export function UserIntro(){
                         n.value = ""
                         nn.value = ""
                     }
-                    // document.getElementById("n") && document.getElementById("nn") && document.getElementById("n").value
+                    window.location.reload()// document.getElementById("n") && document.getElementById("nn") && document.getElementById("n").value
                 }}>Save</button>
              </div>
           </div>
