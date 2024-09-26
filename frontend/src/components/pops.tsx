@@ -105,12 +105,12 @@ export function SchedulePop({
           {c && !a && g && <E text={g} />}
           <h3 className="text-xl">Schedule a new meeting</h3>
           <div className="flex flex-col gap-2">
-            <p>Enter Desired ID:</p>
+            <p>Enter Desired ID(Address):</p>
             <input
               className="p-2 text-[#697565]"
               name="id"
               onChange={handleInput}
-              placeholder="Room ID of your choice"
+              placeholder="Room ID(Address) of your choice"
             />
             <p>Input Date and Time</p>
             <input
@@ -212,7 +212,7 @@ export function UpcomingPop({
                   <div className="flex flex-col bg-[#3C3D37] p-2 rounded gap-2 justify-around">
                     <div>
                       <p>
-                        Meeting ID:{" "}
+                        Meeting ID(Address):{" "}
                         <span className="font-bold">{meet.roomId}</span>
                       </p>
                     </div>
