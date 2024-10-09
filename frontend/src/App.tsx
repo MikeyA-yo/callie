@@ -338,9 +338,6 @@ function App() {
           join={() => {
             setJoin(true);
           }}
-          media={() => {
-            setMedia(!media);
-          }}
           schedule={() => {
             if (person.username.length > 1) {
               setSPop(true);

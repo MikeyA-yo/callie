@@ -3,14 +3,12 @@ export default function Starters({
   join,
   close,
   text,
-  media,
   upc
 }: {
   schedule: React.MouseEventHandler<HTMLDivElement>;
   join: React.MouseEventHandler<HTMLDivElement>;
   close: React.MouseEventHandler<HTMLDivElement>;
   text: string;
-  media: React.MouseEventHandler<HTMLDivElement>;
   upc:React.MouseEventHandler<HTMLDivElement>;
 }) {
   return (
@@ -38,13 +36,6 @@ export default function Starters({
         >
           <VideoSvg className={`size-12`} />
           {text}
-        </div>
-        <div
-          className="flex flex-col gap-2 items-center cursor-pointer"
-          onClick={media}
-        >
-          <MediaSvg />
-          Toggle Media
         </div>
         <div className="flex flex-col gap-2 items-center cursor-pointer" onClick={upc}>
           <View className="size-12 fill-[#ECDFCC]"  />
@@ -183,6 +174,13 @@ function MediaSvg() {
   );
 }
 
+{/* <div
+className="flex flex-col gap-2 items-center cursor-pointer"
+onClick={media}
+>
+<MediaSvg />
+Toggle Media
+</div> */}
 function VideoSlashSvg(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
